@@ -1,0 +1,12 @@
+.custom_modal {
+  :global {
+    .ant-modal-title {
+      color: #0d55da !important;
+      font-weight: 600;
+      font-size: 16px;
+    }
+    .ant-modal-close-x {
+      color: #0d55da;
+    }
+  }
+}

@@ -1,0 +1,80 @@
+.header {
+  display: flex;
+  align-items: center;
+  padding-top: 28px;
+  .logo {
+    background: #fcfdfe;
+    border-radius: 4.5px;
+  }
+  .title {
+    line-height: 140%;
+    color: #083383;
+  }
+  .title_desc {
+    line-height: 140%;
+    text-transform: capitalize;
+    color: #3f3f5d;
+  }
+}
+
+.create_btn {
+  margin-left: auto;
+  :global {
+    .ant-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 165px;
+      height: 40px;
+      @media (min-width: 1024px) {
+        width: 195px;
+        height: 44px;
+      }
+    }
+  }
+}
+
+.list_container {
+  padding-top: 24px;
+}
+
+.table_header {
+  display: flex;
+  align-items: center;
+  padding-left: 24px;
+  background: #fcfcfe;
+  border-radius: 8px 8px 0px 0px;
+  color: #6f6f85;
+  line-height: 16px;
+}
+
+.table_row {
+  display: flex;
+  align-items: center;
+  padding-left: 24px;
+  background: #fcfdfe;
+  border-radius: 8px;
+  height: 70px;
+  @media (min-width: 1024px) {
+    height: 80px;
+  }
+}
+
+.header_item,
+.row_item {
+  flex: 1 1 20%;
+  text-align: left;
+}
+.special_item {
+  flex-basis: 40%;
+}
+
+.scp_name {
+  line-height: 140%;
+  color: #0f0f34;
+}
+
+.scp_id {
+  line-height: 140%;
+  color: #3f3f5d;
+}

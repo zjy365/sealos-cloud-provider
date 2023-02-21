@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.icon {
+  width: 16px;
+  height: 16px;
+  vertical-align: -0.15em;
+  fill: currentColor;
+  overflow: hidden;
+}
+
+.pageScrollWrapper {
+  overflow-x: hidden;
+  overflow-y: scroll;
+  position: relative;
+  scroll-behavior: smooth;
+}
+
+.hiddenScrollWrapper {
+  overflow-x: scroll;
+  overflow-y: scroll;
+  position: relative;
+  scroll-behavior: smooth;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+  border-radius: 6px;
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 6px;
+}
