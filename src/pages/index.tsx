@@ -4,7 +4,7 @@ import request from '@/services/request';
 import useSessionStore from '@/stores/session';
 import { formatTime } from '@/utils/format';
 import { useQuery } from '@tanstack/react-query';
-import { Button } from 'antd';
+import { Button, ButtonGroup } from '@chakra-ui/react';
 import clsx from 'clsx';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
@@ -80,22 +80,21 @@ function FrontPage() {
           </span>
           <span className={clsx(styles.title_desc, 'text-sm lg:text-xl')}>manage my clusters</span>
         </div>
-        <div className={styles.create_btn}>
-          <Button
-            type="primary"
-            icon={
-              <IconFont
-                iconName="icon-create-button"
-                className={'inline-block'}
-                width={20}
-                height={20}
-              />
-            }
-            onClick={goCreatePage}
-          >
-            Create Cluster
-          </Button>
-        </div>
+
+        <Button
+          className="ml-auto w-40 lg:w-48 h-10 lg:h-11"
+          leftIcon={
+            <IconFont
+              iconName="icon-create-button"
+              className={'inline-block'}
+              width={20}
+              height={20}
+            />
+          }
+          onClick={goCreatePage}
+        >
+          Create Cluster
+        </Button>
       </div>
       {isSuccess && (
         <div className={clsx(styles.list_container, 'space-y-2')}>

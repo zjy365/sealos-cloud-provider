@@ -23,15 +23,11 @@
 
 .create_btn {
   margin-left: 24px;
-  :global {
-    .ant-btn {
-      width: 124px;
-      height: 36px;
-      @media (min-width: 1024px) {
-        width: 146px;
-        height: 44px;
-      }
-    }
+  width: 124px;
+  height: 36px;
+  @media (min-width: 1024px) {
+    width: 146px;
+    height: 44px;
   }
 }
 
@@ -44,25 +40,6 @@
     .form_container_right {
       margin-left: 0;
       margin-top: 30px;
-    }
-  }
-}
-
-.back_btn {
-  :global {
-    .ant-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0;
-      padding: 0;
-      width: 36px;
-      height: 36px;
-      border: 1px solid #0d55da;
-      @media (min-width: 1024px) {
-        width: 40px;
-        height: 40px;
-      }
     }
   }
 }

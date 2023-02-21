@@ -5,28 +5,29 @@ import { convertKeyToLabel, TNodeListItem, TNodeMetaData } from '@/interfaces/in
 import request from '@/services/request';
 import useSessionStore from '@/stores/session';
 import { hideMiddleChars, splitChars } from '@/utils/strings';
+import { Button, IconButton, useToast } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
-import { Button, Input, message, Modal, Radio } from 'antd';
 import clsx from 'clsx';
 import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import styles from './detail.module.scss';
-import DeleteModal from '@/components/delete_modal';
 
 const ScpNodeItem = (props: TNodeListItem) => {
   const { type, item } = props;
-  const [messageApi, contextHolder] = message.useMessage();
+  const toast = useToast();
   const successCopy = (value: string, isShowContent = true) => {
     navigator.clipboard.writeText(value);
-    messageApi.open({
-      type: 'success',
-      content: isShowContent ? `${value} copied` : 'copied'
+    toast({
+      title: isShowContent ? `${value} copied` : 'copied',
+      status: 'success',
+      position: 'top',
+      duration: 2000,
+      isClosable: true
     });
   };
   return (
     <div className={clsx(styles.table_row)} key={item?.id}>
-      {contextHolder}
       <div className={clsx(styles.row_item, styles.special_item, 'flex')}>
         {type === 'master' && (
           <Image alt="master" src="/images/scp_master.svg" width={24} height={24} />
@@ -73,9 +74,9 @@ export default function DetailPage() {
   const { name } = router.query;
   const infraName = name || '';
   const { kubeconfig } = useSessionStore((state) => state.getSession());
-  const [messageApi, contextHolder] = message.useMessage();
   const [scpListType, setScpListType] = useState('All');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const toast = useToast();
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -101,37 +102,50 @@ export default function DetailPage() {
 
   const successCopy = (value: string, isShowContent = true) => {
     navigator.clipboard.writeText(value);
-    messageApi.open({
-      type: 'success',
-      content: isShowContent ? `${value} copied` : 'copied'
+    toast({
+      title: isShowContent ? `${value} copied` : 'copied',
+      status: 'success',
+      position: 'top',
+      duration: 2000,
+      isClosable: true
     });
   };
 
-  const handleClickRadio = (e: any) => {
-    const { value } = e.target;
+  const onScpTypeChange = (e: any) => {
+    const value = e?.target?.textContent || 'All';
     setScpListType(value);
   };
 
   return (
     <div className="flex flex-col w-full h-full">
-      {contextHolder}
-      <div className="flex items-center h-12 lg:h-14">
-        <div className={clsx(styles.back_btn)}>
-          <Button onClick={backIndexPage}>
-            <IconFont iconName="icon-back-button" color="#0D55DA" width={20} height={20} />
-          </Button>
-        </div>
+      <div className="flex items-center justify-center h-12 lg:h-14 ">
+        <IconButton
+          className={styles.back_btn}
+          variant="outline"
+          aria-label="backIndexPage"
+          icon={<IconFont iconName="icon-back-button" color="#0D55DA" />}
+          onClick={backIndexPage}
+        />
         <div className={clsx('flex flex-col pl-4 text-blue-800')}>
           <span className="text-xl font-semibold lg:text-2xl">{name}</span>
           <span className={clsx('text-xs lg:text-sm')}> https://my-cluster.cloud.sealos.io</span>
         </div>
-        <div className={styles.custom_button}>
-          <Button type="primary">
-            <IconFont iconName="icon-edit-button" className={'inline-block'} />
-            Edit
-          </Button>
-          <Button onClick={showModal}>Delete</Button>
-        </div>
+        <Button
+          className="ml-auto h-9 w-24"
+          leftIcon={
+            <IconFont
+              iconName="icon-edit-button"
+              className={'inline-block'}
+              width={20}
+              height={20}
+            />
+          }
+        >
+          Edit
+        </Button>
+        <Button className="ml-2 h-9 w-24" variant={'outline'} onClick={showModal}>
+          Delete
+        </Button>
       </div>
       <div className="grow flex mt-4">
         {/* @media (min-width: 1024px) card */}
@@ -145,16 +159,18 @@ export default function DetailPage() {
               height={24}
             />
             <span className={'text-blue-600'}>List</span>
-            <div className={styles.custom_radio_group}>
-              <Radio.Group
-                defaultValue="All"
-                buttonStyle="solid"
-                onChange={(e: any) => handleClickRadio(e)}
+            <div className={styles.custom_radio_group} onClick={onScpTypeChange}>
+              <div className={clsx({ [styles.active]: scpListType === 'All' }, styles.radio_btn)}>
+                All
+              </div>
+              <div
+                className={clsx({ [styles.active]: scpListType === 'Masters' }, styles.radio_btn)}
               >
-                <Radio.Button value="All">All</Radio.Button>
-                <Radio.Button value="Masters">Masters</Radio.Button>
-                <Radio.Button value="Nodes">Nodes</Radio.Button>
-              </Radio.Group>
+                Masters
+              </div>
+              <div className={clsx({ [styles.active]: scpListType === 'Nodes' }, styles.radio_btn)}>
+                Nodes
+              </div>
             </div>
           </div>
           <div className={clsx(styles.list_container)}>
@@ -232,14 +248,17 @@ export default function DetailPage() {
                 <span style={{ color: '#0F0F34', marginLeft: 'auto' }}>
                   {hideMiddleChars(scpInfo?.data?.metadata?.uid)}
                 </span>
-                <span className="ml-1" onClick={() => successCopy(scpInfo?.data?.metadata?.uid)}>
+                <span
+                  className="ml-1 cursor-pointer"
+                  onClick={() => successCopy(scpInfo?.data?.metadata?.uid)}
+                >
                   <IconFont iconName="icon-copy" color="#0D55DA" width={12} height={12} />
                 </span>
               </li>
               <li className="flex items-center">
                 <span style={{ color: '#3F3F5D' }}>Ssh key</span>
                 <span
-                  className="ml-auto"
+                  className="ml-auto cursor-pointer"
                   onClick={() => successCopy(scpInfo?.data?.spec?.ssh?.pkData, false)}
                 >
                   <IconFont iconName="icon-copy" color="#0D55DA" width={12} height={12} />
@@ -295,7 +314,7 @@ export default function DetailPage() {
           </div>
         </div>
       </div>
-      <DeleteModal infraName={infraName as string} isOpen={isModalOpen} onOpen={handleModalOpen} />
+      {/* <DeleteModal infraName={infraName as string} isOpen={isModalOpen} onOpen={handleModalOpen} /> */}
     </div>
   );
 }

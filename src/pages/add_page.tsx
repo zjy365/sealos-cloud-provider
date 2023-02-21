@@ -4,23 +4,35 @@ import {
   conversionPrice,
   debounce,
   generateYamlTemplate,
-  SELECT_DISK_TYPE,
-  SELECT_SCP_TYPE,
   sliceMarkDown,
   TScpForm,
-  TScpFormComponent,
   TSelectOption,
   validResourcesName
 } from '@/interfaces/infra_common';
 import request from '@/services/request';
 import useSessionStore from '@/stores/session';
+import {
+  Box,
+  Button,
+  Flex,
+  FormControl,
+  FormLabel,
+  IconButton,
+  Input,
+  NumberDecrementStepper,
+  NumberIncrementStepper,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+  Select,
+  useToast
+} from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
-import { Button, Form, Input, InputNumber, message, Select, Space } from 'antd';
-import { useForm } from 'antd/lib/form/Form';
 import clsx from 'clsx';
-import { omit } from 'lodash';
+import { divide, omit } from 'lodash';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import styles from './add_page.module.scss';
 
 const HeaderInfoComponent = ({ content }: { content: string }) => {
@@ -32,90 +44,89 @@ const HeaderInfoComponent = ({ content }: { content: string }) => {
   );
 };
 
-const ScpFormComponent = (props: TScpFormComponent) => {
-  const { type, scpImageOptions } = props;
-  return (
-    <>
-      <HeaderInfoComponent content={type === 'node' ? 'Node' : 'Master'} />
-      <div
-        className={clsx(styles.custom_antd_form_select, {
-          [styles.hidden_form_item]: type === 'node'
-        })}
-      >
-        <Form.Item name="scpImage" label="image">
-          <Select options={scpImageOptions ? scpImageOptions : []} />
-        </Form.Item>
-      </div>
-      <div className={clsx(styles.custom_antd_form_select)}>
-        <Form.Item name={`${type}Count`} label="count">
-          <InputNumber min={1} max={10} />
-        </Form.Item>
+// const ScpFormComponent = (props: TScpFormComponent) => {
+//   const { type, scpImageOptions } = props;
+//   return (
+//     <>
+//       <HeaderInfoComponent content={type === 'node' ? 'Node' : 'Master'} />
+//       <div
+//         className={clsx(styles.custom_antd_form_select, {
+//           [styles.hidden_form_item]: type === 'node'
+//         })}
+//       >
+//         <Form.Item name="scpImage" label="image">
+//           <Select options={scpImageOptions ? scpImageOptions : []} />
+//         </Form.Item>
+//       </div>
+//       <div className={clsx(styles.custom_antd_form_select)}>
+//         <Form.Item name={`${type}Count`} label="count">
+//           <InputNumber min={1} max={10} />
+//         </Form.Item>
 
-        <Form.Item name={`${type}Type`} label="flavor">
-          <Select options={SELECT_SCP_TYPE} />
-        </Form.Item>
-      </div>
-      <div className={clsx(styles.custom_antd_form_min_select)}>
-        <Form.Item label="root volume">
-          <Space>
-            <Form.Item name={`${type}RootDiskSize`}>
-              <InputNumber min={8} max={128} />
-            </Form.Item>
-            GB
-          </Space>
-        </Form.Item>
-        <Form.Item name={`${type}RootDiskType`}>
-          <Select options={SELECT_DISK_TYPE} />
-        </Form.Item>
-      </div>
-      <Form.List name={`${type}DataDisks`}>
-        {(fields, { add, remove }) => (
-          <>
-            {fields.map(({ key, name, ...restField }) => (
-              <div key={key} className={clsx(styles.custom_antd_form_min_select)}>
-                <Form.Item {...restField} label="data volume" name={[name, 'capacity']}>
-                  <Space>
-                    <InputNumber min={8} max={128} defaultValue={8} />
-                    <div className={'inline-block align-middle'}>GB</div>
-                  </Space>
-                </Form.Item>
-                <Form.Item {...restField} name={[name, 'volumeType']}>
-                  <Select defaultValue={'gp3'} options={SELECT_DISK_TYPE} />
-                </Form.Item>
-                <div className="mt-1 ml-3" onClick={() => remove(name)}>
-                  <IconFont iconName="icon-delete-button" color="#0D55DA" width={24} height={24} />
-                </div>
-              </div>
-            ))}
+//         <Form.Item name={`${type}Type`} label="flavor">
+//           <Select options={SELECT_SCP_TYPE} />
+//         </Form.Item>
+//       </div>
+//       <div className={clsx(styles.custom_antd_form_min_select)}>
+//         <Form.Item label="root volume">
+//           <Space>
+//             <Form.Item name={`${type}RootDiskSize`}>
+//               <InputNumber min={8} max={128} />
+//             </Form.Item>
+//             GB
+//           </Space>
+//         </Form.Item>
+//         <Form.Item name={`${type}RootDiskType`}>
+//           <Select options={SELECT_DISK_TYPE} />
+//         </Form.Item>
+//       </div>
+//       <Form.List name={`${type}DataDisks`}>
+//         {(fields, { add, remove }) => (
+//           <>
+//             {fields.map(({ key, name, ...restField }) => (
+//               <div key={key} className={clsx(styles.custom_antd_form_min_select)}>
+//                 <Form.Item {...restField} label="data volume" name={[name, 'capacity']}>
+//                   <Space>
+//                     <InputNumber min={8} max={128} defaultValue={8} />
+//                     <div className={'inline-block align-middle'}>GB</div>
+//                   </Space>
+//                 </Form.Item>
+//                 <Form.Item {...restField} name={[name, 'volumeType']}>
+//                   <Select defaultValue={'gp3'} options={SELECT_DISK_TYPE} />
+//                 </Form.Item>
+//                 <div className="mt-1 ml-3" onClick={() => remove(name)}>
+//                   <IconFont iconName="icon-delete-button" color="#0D55DA" width={24} height={24} />
+//                 </div>
+//               </div>
+//             ))}
 
-            <div
-              className="flex items-center cursor-pointer ml-3 mb-3"
-              onClick={() => {
-                if (fields.length + 1 > 16) return;
-                add({ capacity: 8, volumeType: 'gp3', type: 'data' });
-              }}
-            >
-              <IconFont
-                iconName="icon-more-clusterform"
-                className="rounded hover:bg-gery-300"
-                color="#0D55DA"
-                width={20}
-                height={20}
-              />
-              <span className="pl-1">add data disk</span>
-            </div>
-          </>
-        )}
-      </Form.List>
-    </>
-  );
-};
+//             <div
+//               className="flex items-center cursor-pointer ml-3 mb-3"
+//               onClick={() => {
+//                 if (fields.length + 1 > 16) return;
+//                 add({ capacity: 8, volumeType: 'gp3', type: 'data' });
+//               }}
+//             >
+//               <IconFont
+//                 iconName="icon-more-clusterform"
+//                 className="rounded hover:bg-grey-300"
+//                 color="#0D55DA"
+//                 width={20}
+//                 height={20}
+//               />
+//               <span className="pl-1">add data disk</span>
+//             </div>
+//           </>
+//         )}
+//       </Form.List>
+//     </>
+//   );
+// };
 
 export default function AddPage() {
   const router = useRouter();
   const { kubeconfig } = useSessionStore((state) => state.getSession());
-  const [messageApi, contextHolder] = message.useMessage();
-  const [form] = useForm();
+  const toast = useToast();
   const scpForm: TScpForm = {
     infraName: '',
     scpImage: 'ami-048280a00d5085dd1',
@@ -135,6 +146,11 @@ export default function AddPage() {
     nodeRootDiskType: 'gp3',
     nodeDataDisks: []
   };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors }
+  } = useForm<TScpForm>({ defaultValues: scpForm });
   const { data } = useQuery(
     ['getConfigMap'],
     async () =>
@@ -165,9 +181,12 @@ export default function AddPage() {
   const successCopy = (value: string, isShowContent = true) => {
     const newValue = sliceMarkDown(value);
     navigator.clipboard.writeText(newValue);
-    messageApi.open({
-      type: 'success',
-      content: isShowContent ? `${value} copied` : 'copied'
+    toast({
+      title: isShowContent ? `${value} copied` : 'copied',
+      status: 'success',
+      position: 'top',
+      duration: 2000,
+      isClosable: true
     });
   };
 
@@ -203,7 +222,7 @@ export default function AddPage() {
           reject(`infras.infra.sealos.io ${name} already exists`);
         }
       });
-      resolve();
+      resolve('success');
     });
   };
 
@@ -230,24 +249,21 @@ export default function AddPage() {
 
   return (
     <div className="flex flex-col w-full h-full">
-      {contextHolder}
       <div className="flex items-center">
-        <div className={clsx(styles.back_btn)}>
-          <Button onClick={backIndexPage}>
-            <IconFont iconName="icon-back-button" color="#0D55DA" width={20} height={20} />
-          </Button>
-        </div>
+        <IconButton
+          variant="outline"
+          aria-label="backIndexPage"
+          icon={<IconFont iconName="icon-back-button" color="#0D55DA" width={20} height={20} />}
+          onClick={backIndexPage}
+        />
         <div className={clsx('text-blue-800 pl-4 font-semibold text-xl lg:text-2xl')}>
           Create My Cluster
         </div>
         <div className={clsx('text-blue-800 ml-auto text-lg lg:text-2xl font-medium')}>
           ¥ <span style={{ color: '#ef7733' }}>{scpPrice}</span> / Hour
         </div>
-        <div className={styles.create_btn}>
-          <Button type="primary" onClick={() => form.submit()} htmlType="submit">
-            Create Now
-          </Button>
-        </div>
+
+        <Button className={styles.create_btn}>Create Now</Button>
       </div>
       {/* infra form */}
       <div className={clsx(styles.form_container)}>
@@ -258,6 +274,17 @@ export default function AddPage() {
           )}
         >
           <div className={clsx(styles.custom_antd_form, 'absolute w-full pl-3 pb-5 lg:pl-8')}>
+            <HeaderInfoComponent content="Info" />
+            <FormControl>
+              <Flex alignItems={'center'}>
+                <Box w={100} fontSize={14} fontWeight={400}>
+                  cluster name
+                </Box>
+                <Input w={'322px'} h={'28px'} {...register('infraName')} />
+              </Flex>
+            </FormControl>
+          </div>
+          {/* <div className={clsx(styles.custom_antd_form, 'absolute w-full pl-3 pb-5 lg:pl-8')}>
             <Form
               form={form}
               name="yamlform"
@@ -282,7 +309,7 @@ export default function AddPage() {
               >
                 <Input style={{ width: '322px', height: '28px', backgroundColor: '#FAFAFC' }} />
               </Form.Item>
-              {/* <div className={clsx(styles.custom_antd_form_select)}>
+              <div className={clsx(styles.custom_antd_form_select)}>
                 <Form.Item name="sealosVersion" label="sealos version">
                   <Select options={[{ value: 'Aws', label: 'Aws' }]} />
                 </Form.Item>
@@ -295,11 +322,11 @@ export default function AddPage() {
                     ]}
                   />
                 </Form.Item>
-              </div> */}
+              </div>
               <ScpFormComponent type="master" scpImageOptions={imageOptions} />
               <ScpFormComponent type="node" />
             </Form>
-          </div>
+          </div> */}
         </div>
         <div
           className={clsx(
@@ -311,7 +338,7 @@ export default function AddPage() {
           <div className="mt-4 mx-3 lg:mx-9  flex items-center">
             <HeaderInfoComponent content="YAML Definition" />
             <div
-              className="ml-auto p-1 rounded hover:bg-gery-300"
+              className="ml-auto p-1 rounded hover:bg-grey-300"
               onClick={() => successCopy(yamlTemplate, false)}
             >
               <IconFont iconName="icon-copy" color="#0D55DA" width={18} height={18} />

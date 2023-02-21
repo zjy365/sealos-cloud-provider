@@ -17,23 +17,6 @@
   }
 }
 
-.create_btn {
-  margin-left: auto;
-  :global {
-    .ant-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 165px;
-      height: 40px;
-      @media (min-width: 1024px) {
-        width: 195px;
-        height: 44px;
-      }
-    }
-  }
-}
-
 .list_container {
   padding-top: 24px;
 }

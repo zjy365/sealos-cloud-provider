@@ -28,11 +28,12 @@ module.exports = {
         800: '#09091F',
         900: '#060615'
       },
-      gery: {
+      grey: {
         100: '#FAFAFC',
         200: '#F4F6FA',
         300: '#E9EDF5',
-        400: '#DEE3EF'
+        400: '#DEE3EF',
+        600: '#FCFDFE'
       },
       gray: {
         600: '#0F0F34'

@@ -3,66 +3,6 @@
   border-radius: 8px;
 }
 
-.back_btn {
-  :global {
-    .ant-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0;
-      padding: 0;
-      width: 36px;
-      height: 36px;
-      border: 1px solid #0d55da;
-      @media (min-width: 1024px) {
-        width: 48px;
-        height: 48px;
-      }
-    }
-  }
-}
-
-.custom_button {
-  margin-left: auto;
-  :global {
-    .ant-btn {
-      width: 92px;
-      height: 36px;
-      border: 1px solid #0d55da;
-    }
-    .ant-btn-default {
-      color: #0d55da;
-      margin-left: 8px;
-    }
-  }
-}
-
-.custom_radio_group {
-  margin-left: auto;
-  :global {
-    .ant-radio-button-wrapper {
-      height: 28px;
-      line-height: 28px;
-      font-size: 12px;
-      font-weight: 400;
-      color: #0d55da;
-    }
-    .ant-radio-button-wrapper:first-child {
-      border-start-start-radius: 4px;
-      border-end-start-radius: 4px;
-    }
-    .ant-radio-button-wrapper:last-child {
-      border-start-end-radius: 4px;
-      border-end-end-radius: 4px;
-    }
-    .ant-radio-button-wrapper-checked {
-      color: #0d55da !important;
-      border-color: #0d55da !important;
-      background: #e7eefb !important;
-    }
-  }
-}
-
 .table_header {
   display: flex;
   height: 38px;
@@ -124,6 +64,7 @@
     }
   }
   .meta_ip_copy {
+    cursor: pointer;
     display: none;
     padding: 2px;
   }
@@ -132,4 +73,55 @@
 .list_card {
   font-weight: 400px;
   font-size: 10px;
+}
+
+.custom_radio_group {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0d55da;
+  margin-left: auto;
+  margin-right: 16px;
+  cursor: pointer;
+  width: 192px;
+  height: 28px;
+  .radio_btn {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0px 16px;
+    border: 1px solid #0d55da;
+  }
+  .radio_btn.active {
+    background: #e7eefb;
+  }
+  .radio_btn:first-child {
+    border-radius: 3px 0px 0px 3px;
+    border-right: 0;
+  }
+  .radio_btn:last-child {
+    border-radius: 0px 3px 3px 0px;
+    border-left: 0;
+  }
+}
+
+.back_btn {
+  width: 36px;
+  height: 36px;
+  :global {
+    .icon {
+      width: 20px;
+      height: 20px;
+    }
+  }
+  @media (min-width: 1024px) {
+    width: 48px;
+    height: 48px !important;
+    :global {
+      .icon {
+        width: 26px;
+        height: 26px;
+      }
+    }
+  }
 }
