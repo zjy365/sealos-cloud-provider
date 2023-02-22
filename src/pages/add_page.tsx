@@ -1,5 +1,7 @@
 import IconFont from '@/components/iconfont';
 import MarkDown from '@/components/markdown';
+import ScpFormComponent from '@/components/scp_form';
+import HeaderInfoComponent from '@/components/title_info';
 import {
   conversionPrice,
   debounce,
@@ -16,112 +18,18 @@ import {
   Button,
   Flex,
   FormControl,
-  FormLabel,
   IconButton,
   Input,
-  NumberDecrementStepper,
-  NumberIncrementStepper,
-  NumberInput,
-  NumberInputField,
-  NumberInputStepper,
   Select,
   useToast
 } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
-import { divide, omit } from 'lodash';
+import { omit } from 'lodash';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, UseFormReturn } from 'react-hook-form';
 import styles from './add_page.module.scss';
-
-const HeaderInfoComponent = ({ content }: { content: string }) => {
-  return (
-    <div className={clsx('flex items-center mb-3')}>
-      <div className={styles.info_left}></div>
-      <div className={styles.info_right}>{content}</div>
-    </div>
-  );
-};
-
-// const ScpFormComponent = (props: TScpFormComponent) => {
-//   const { type, scpImageOptions } = props;
-//   return (
-//     <>
-//       <HeaderInfoComponent content={type === 'node' ? 'Node' : 'Master'} />
-//       <div
-//         className={clsx(styles.custom_antd_form_select, {
-//           [styles.hidden_form_item]: type === 'node'
-//         })}
-//       >
-//         <Form.Item name="scpImage" label="image">
-//           <Select options={scpImageOptions ? scpImageOptions : []} />
-//         </Form.Item>
-//       </div>
-//       <div className={clsx(styles.custom_antd_form_select)}>
-//         <Form.Item name={`${type}Count`} label="count">
-//           <InputNumber min={1} max={10} />
-//         </Form.Item>
-
-//         <Form.Item name={`${type}Type`} label="flavor">
-//           <Select options={SELECT_SCP_TYPE} />
-//         </Form.Item>
-//       </div>
-//       <div className={clsx(styles.custom_antd_form_min_select)}>
-//         <Form.Item label="root volume">
-//           <Space>
-//             <Form.Item name={`${type}RootDiskSize`}>
-//               <InputNumber min={8} max={128} />
-//             </Form.Item>
-//             GB
-//           </Space>
-//         </Form.Item>
-//         <Form.Item name={`${type}RootDiskType`}>
-//           <Select options={SELECT_DISK_TYPE} />
-//         </Form.Item>
-//       </div>
-//       <Form.List name={`${type}DataDisks`}>
-//         {(fields, { add, remove }) => (
-//           <>
-//             {fields.map(({ key, name, ...restField }) => (
-//               <div key={key} className={clsx(styles.custom_antd_form_min_select)}>
-//                 <Form.Item {...restField} label="data volume" name={[name, 'capacity']}>
-//                   <Space>
-//                     <InputNumber min={8} max={128} defaultValue={8} />
-//                     <div className={'inline-block align-middle'}>GB</div>
-//                   </Space>
-//                 </Form.Item>
-//                 <Form.Item {...restField} name={[name, 'volumeType']}>
-//                   <Select defaultValue={'gp3'} options={SELECT_DISK_TYPE} />
-//                 </Form.Item>
-//                 <div className="mt-1 ml-3" onClick={() => remove(name)}>
-//                   <IconFont iconName="icon-delete-button" color="#0D55DA" width={24} height={24} />
-//                 </div>
-//               </div>
-//             ))}
-
-//             <div
-//               className="flex items-center cursor-pointer ml-3 mb-3"
-//               onClick={() => {
-//                 if (fields.length + 1 > 16) return;
-//                 add({ capacity: 8, volumeType: 'gp3', type: 'data' });
-//               }}
-//             >
-//               <IconFont
-//                 iconName="icon-more-clusterform"
-//                 className="rounded hover:bg-grey-300"
-//                 color="#0D55DA"
-//                 width={20}
-//                 height={20}
-//               />
-//               <span className="pl-1">add data disk</span>
-//             </div>
-//           </>
-//         )}
-//       </Form.List>
-//     </>
-//   );
-// };
 
 export default function AddPage() {
   const router = useRouter();
@@ -146,11 +54,8 @@ export default function AddPage() {
     nodeRootDiskType: 'gp3',
     nodeDataDisks: []
   };
-  const {
-    register,
-    handleSubmit,
-    formState: { errors }
-  } = useForm<TScpForm>({ defaultValues: scpForm });
+  const scpFormHook: UseFormReturn<TScpForm, any> = useForm<TScpForm>({ defaultValues: scpForm });
+
   const { data } = useQuery(
     ['getConfigMap'],
     async () =>
@@ -237,6 +142,9 @@ export default function AddPage() {
       setScpPrice(price);
     }
   }
+
+  scpFormHook.watch((value, { name, type }) => console.log(value, name, type));
+
   const onValuesChange = (changedValues: any, allValues: any) => {
     setYamlTemplate(generateYamlTemplate({ ...scpForm, ...allValues }));
     debounce(() => getPrice({ ...scpForm, ...allValues }));
@@ -274,59 +182,57 @@ export default function AddPage() {
           )}
         >
           <div className={clsx(styles.custom_antd_form, 'absolute w-full pl-3 pb-5 lg:pl-8')}>
-            <HeaderInfoComponent content="Info" />
+            <HeaderInfoComponent content="Info" size="lg" />
             <FormControl>
               <Flex alignItems={'center'}>
                 <Box w={100} fontSize={14} fontWeight={400}>
                   cluster name
                 </Box>
-                <Input w={'322px'} h={'28px'} {...register('infraName')} />
+                <Input
+                  width={{ md: '322px', lg: '360px' }}
+                  {...scpFormHook.register('infraName')}
+                />
               </Flex>
             </FormControl>
+            <FormControl>
+              <Flex alignItems={'center'}>
+                <Box w={100} fontSize={14}>
+                  sealos version
+                </Box>
+                <Select
+                  placeholder="sealos version"
+                  width={{ md: '116px', lg: '160px' }}
+                  {...scpFormHook.register('sealosVersion')}
+                >
+                  <option value="Aws">Aws</option>
+                </Select>
+                <Box w={100} fontSize={14}>
+                  platform
+                </Box>
+                <Select
+                  placeholder="platform"
+                  width={{ md: '116px', lg: '160px' }}
+                  {...scpFormHook.register('sealosPlatform')}
+                >
+                  {[
+                    { value: 'aws', label: 'aws' },
+                    { value: 'test', label: 'tes' }
+                  ].map((item: TSelectOption) => (
+                    <option key={item.value} value={item.value}>
+                      {item.label}
+                    </option>
+                  ))}
+                </Select>
+              </Flex>
+            </FormControl>
+            <ScpFormComponent
+              key={'master'}
+              type="master"
+              scpImageOptions={imageOptions}
+              formHook={scpFormHook}
+            />
+            <ScpFormComponent key={'node'} type="node" formHook={scpFormHook} />
           </div>
-          {/* <div className={clsx(styles.custom_antd_form, 'absolute w-full pl-3 pb-5 lg:pl-8')}>
-            <Form
-              form={form}
-              name="yamlform"
-              colon={false}
-              initialValues={scpForm}
-              onFinish={onFinish}
-              onFinishFailed={onFinishFailed}
-              onValuesChange={onValuesChange}
-              autoComplete="off"
-            >
-              <HeaderInfoComponent content="Info" />
-              <Form.Item
-                label="cluster name"
-                name="infraName"
-                style={{ marginLeft: '6px', marginBottom: '30px' }}
-                wrapperCol={{ span: 12 }}
-                rules={[
-                  {
-                    validator: (_, value) => isScpExist(value)
-                  }
-                ]}
-              >
-                <Input style={{ width: '322px', height: '28px', backgroundColor: '#FAFAFC' }} />
-              </Form.Item>
-              <div className={clsx(styles.custom_antd_form_select)}>
-                <Form.Item name="sealosVersion" label="sealos version">
-                  <Select options={[{ value: 'Aws', label: 'Aws' }]} />
-                </Form.Item>
-                <Form.Item name="sealosPlatform" label="platform">
-                  <Select
-                    options={[
-                      { value: 'jack', label: 'Jack' },
-                      { value: 'lucy', label: 'Lucy' },
-                      { value: 'Yiminghe', label: 'yiminghe' }
-                    ]}
-                  />
-                </Form.Item>
-              </div>
-              <ScpFormComponent type="master" scpImageOptions={imageOptions} />
-              <ScpFormComponent type="node" />
-            </Form>
-          </div> */}
         </div>
         <div
           className={clsx(
@@ -336,7 +242,7 @@ export default function AddPage() {
           )}
         >
           <div className="mt-4 mx-3 lg:mx-9  flex items-center">
-            <HeaderInfoComponent content="YAML Definition" />
+            <HeaderInfoComponent content="YAML Definition" size="lg" />
             <div
               className="ml-auto p-1 rounded hover:bg-grey-300"
               onClick={() => successCopy(yamlTemplate, false)}

@@ -241,7 +241,7 @@ export default function DetailPage() {
         {/* scp info */}
         <div className={clsx('basis-1/4 ml-3 flex flex-col lg:basis-1/5')}>
           <div className={clsx(styles.base_card_style, 'px-3 py-4')}>
-            <TitleInfo info="Info" />
+            <TitleInfo content="Info" />
             <ul className={clsx(styles.list_card, 'space-y-3 mt-3')}>
               <li className="flex items-center">
                 <span style={{ color: '#3F3F5D' }}>ID</span>
@@ -275,7 +275,7 @@ export default function DetailPage() {
             </ul>
           </div>
           <div className={clsx(styles.base_card_style, 'mt-3 px-3 py-4')}>
-            <TitleInfo info="Master" />
+            <TitleInfo content="Master" />
             <ul className={clsx(styles.list_card, 'space-y-3 mt-3')}>
               <li className="flex items-center">
                 <span style={{ color: '#3F3F5D' }}>Flavor</span>
@@ -294,7 +294,7 @@ export default function DetailPage() {
             </ul>
           </div>
           <div className={clsx(styles.base_card_style, 'mt-3 px-3 py-4')}>
-            <TitleInfo info="Master" />
+            <TitleInfo content="Master" />
             <ul className={clsx(styles.list_card, 'space-y-3 mt-3')}>
               <li className="flex items-center">
                 <span style={{ color: '#3F3F5D' }}>Flavor</span>

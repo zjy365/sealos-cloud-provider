@@ -182,8 +182,3 @@ export type TScpForm = {
   nodeRootDiskType: string;
   nodeDataDisks: TDiskOption[];
 };
-
-export type TScpFormComponent = {
-  type: 'master' | 'node';
-  scpImageOptions?: TSelectOption[];
-};

@@ -3,24 +3,6 @@
   border-radius: 8px;
 }
 
-.info_left {
-  width: 4px;
-  height: 16px;
-  background: #0d55da;
-  border-radius: 8px;
-}
-
-.info_right {
-  margin-left: 12px;
-  color: #0d55da;
-  font-weight: 400;
-  font-size: 16px;
-  line-height: 140%;
-  @media (min-width: 1024px) {
-    font-size: 20px;
-  }
-}
-
 .create_btn {
   margin-left: 24px;
   width: 124px;
@@ -52,84 +34,4 @@
       background-color: #fcfdfe !important;
     }
   }
-}
-
-.custom_antd_form {
-  :global {
-    .ant-form-item {
-      margin-bottom: 0px;
-    }
-    .ant-form-item-control-input {
-      max-width: 322px;
-      @media (min-width: 1024px) {
-        max-width: 360px;
-      }
-    }
-    .ant-input-number {
-      background-color: #f4f6fa;
-    }
-    .ant-select-selector {
-      background-color: #f4f6fa !important;
-    }
-    .ant-select-arrow {
-      color: #0f0f34 !important;
-    }
-  }
-}
-
-.custom_antd_form_select {
-  display: flex;
-  margin-left: 12px;
-  margin-bottom: 12px;
-  :global {
-    .ant-select {
-      width: auto !important;
-    }
-    .ant-select-selector {
-      height: 30px !important;
-      width: 116px !important;
-      @media (min-width: 1024px) {
-        width: 160px !important;
-      }
-    }
-    .ant-input-number {
-      height: 30px !important;
-      width: 116px !important;
-      @media (min-width: 1024px) {
-        width: 160px !important;
-      }
-    }
-    .ant-form-item:nth-child(2) {
-      margin-left: 30px;
-    }
-  }
-}
-
-.custom_antd_form_min_select {
-  display: flex;
-  margin-left: 12px;
-  margin-bottom: 12px;
-  :global {
-    .ant-select-selector {
-      height: 30px !important;
-      width: 80px !important;
-      @media (min-width: 1024px) {
-        width: 116px !important;
-      }
-    }
-    .ant-input-number {
-      height: 30px !important;
-      width: 82px !important;
-      @media (min-width: 1024px) {
-        width: 118px !important;
-      }
-    }
-    .ant-form-item:nth-child(2) {
-      margin-left: 30px;
-    }
-  }
-}
-
-.hidden_form_item {
-  display: none;
 }

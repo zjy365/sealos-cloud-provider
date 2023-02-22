@@ -1,3 +1,15 @@
+.base[data-size='lg'] {
+  .left {
+    height: 16px;
+  }
+  .right {
+    font-size: 16px;
+    @media (min-width: 1024px) {
+      font-size: 20px;
+    }
+  }
+}
+
 .left {
   width: 4px;
   height: 14px;
