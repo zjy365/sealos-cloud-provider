@@ -1,3 +1,4 @@
+import IconFont from '@/components/iconfont';
 import HeaderInfoComponent from '@/components/title_info';
 import {
   SELECT_DISK_TYPE,
@@ -14,27 +15,12 @@ import {
   NumberInputField,
   NumberInputStepper,
   Select,
-  Text,
-  useNumberInput
+  Text
 } from '@chakra-ui/react';
 import clsx from 'clsx';
+import { useEffect, useRef } from 'react';
 import { Controller, useFieldArray, UseFormReturn } from 'react-hook-form';
 import styles from './index.module.scss';
-import IconFont from '@/components/iconfont';
-
-function MyNumberInputStepper(props: any) {
-  const { getIncrementButtonProps, getDecrementButtonProps } = useNumberInput();
-
-  const incrementButtonProps = getIncrementButtonProps();
-  const decrementButtonProps = getDecrementButtonProps();
-
-  return (
-    <div {...props}>
-      <button {...incrementButtonProps}>+1</button>
-      <button {...decrementButtonProps}>-1</button>
-    </div>
-  );
-}
 
 type TScpFormComponent = {
   type: 'master' | 'node';
@@ -44,8 +30,6 @@ type TScpFormComponent = {
 
 const ScpFormComponent = (props: TScpFormComponent) => {
   const { type, scpImageOptions, formHook: scpFormHook } = props;
-  console.log('render form');
-
   const { fields, append, prepend, remove, swap, move, insert } = useFieldArray({
     name: `${type}DataDisks`,
     control: scpFormHook.control
@@ -53,15 +37,20 @@ const ScpFormComponent = (props: TScpFormComponent) => {
 
   return (
     <>
-      <HeaderInfoComponent content={type === 'node' ? 'Node' : 'Master'} />
+      <div className="mb-3" key={type}>
+        <HeaderInfoComponent content={type === 'node' ? 'Node' : 'Master'} />
+      </div>
 
       <FormControl
-        className={clsx({
-          [styles.hidden_form_item]: type === 'node'
-        })}
+        className={clsx(
+          {
+            [styles.hidden_form_item]: type === 'node'
+          },
+          'mb-3 ml-4'
+        )}
       >
         <Flex alignItems={'center'}>
-          <Text w={100} fontSize={14} fontWeight={400}>
+          <Text mr={'16px'} fontSize={{ md: 14, lg: 16 }} fontWeight={400} color={'gray.600'}>
             image
           </Text>
           {scpImageOptions && (
@@ -77,9 +66,9 @@ const ScpFormComponent = (props: TScpFormComponent) => {
         </Flex>
       </FormControl>
 
-      <FormControl>
+      <FormControl className="mb-3 ml-4">
         <Flex alignItems={'center'}>
-          <Text w={100} fontSize={14}>
+          <Text mr={'20px'} fontSize={{ md: 14, lg: 16 }} fontWeight={400} color={'gray.600'}>
             count
           </Text>
 
@@ -96,13 +85,23 @@ const ScpFormComponent = (props: TScpFormComponent) => {
               >
                 <NumberInputField />
                 <NumberInputStepper>
-                  <NumberIncrementStepper />
-                  <NumberDecrementStepper />
+                  <NumberIncrementStepper>
+                    <IconFont iconName="icon-tune-up" height={14} />
+                  </NumberIncrementStepper>
+                  <NumberDecrementStepper>
+                    <IconFont iconName="icon-tune-down" height={14} />
+                  </NumberDecrementStepper>
                 </NumberInputStepper>
               </NumberInput>
             )}
           />
-          <Text w={100} fontSize={14}>
+          <Text
+            ml={'32px'}
+            mr={'20px'}
+            fontSize={{ md: 14, lg: 16 }}
+            fontWeight={400}
+            color={'gray.600'}
+          >
             flavor
           </Text>
           <Select width={{ md: '116px', lg: '160px' }} {...scpFormHook.register(`${type}Type`)}>
@@ -115,9 +114,9 @@ const ScpFormComponent = (props: TScpFormComponent) => {
         </Flex>
       </FormControl>
 
-      <FormControl>
+      <FormControl className="mb-2 ml-4">
         <Flex alignItems={'center'}>
-          <Text w={100} fontSize={14}>
+          <Text mr={'16px'} fontSize={{ md: 14, lg: 16 }} fontWeight={400} color={'gray.600'}>
             root volume
           </Text>
           <Controller
@@ -134,17 +133,21 @@ const ScpFormComponent = (props: TScpFormComponent) => {
               >
                 <NumberInputField />
                 <NumberInputStepper>
-                  <NumberIncrementStepper />
-                  <NumberDecrementStepper />
+                  <NumberIncrementStepper>
+                    <IconFont iconName="icon-tune-up" height={14} />
+                  </NumberIncrementStepper>
+                  <NumberDecrementStepper>
+                    <IconFont iconName="icon-tune-down" height={14} />
+                  </NumberDecrementStepper>
                 </NumberInputStepper>
               </NumberInput>
             )}
           />
-          <Text>GB</Text>
-          <Text w={100} fontSize={14}>
-            flavor
+          <Text ml={'4px'} fontSize={12} fontWeight={400} color={'gray.600'}>
+            GB
           </Text>
           <Select
+            ml={'24px'}
             width={{ md: '80px', lg: '116px' }}
             {...scpFormHook.register(`${type}RootDiskType`)}
           >
@@ -156,65 +159,75 @@ const ScpFormComponent = (props: TScpFormComponent) => {
           </Select>
         </Flex>
       </FormControl>
+
       {fields.map((field, index) => (
-        <>
-          <FormControl key={field.id}>
-            <Flex alignItems={'center'}>
-              <Text w={100} fontSize={14}>
-                data volume
-              </Text>
-              <Controller
-                control={scpFormHook.control}
-                name={`${type}DataDisks.${index}.capacity`}
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <NumberInput
-                    min={8}
-                    max={256}
-                    width={{ md: '80px', lg: '116px' }}
-                    value={value}
-                    onChange={onChange}
-                    onBlur={onBlur}
-                  >
-                    <NumberInputField />
-                    <NumberInputStepper>
-                      <NumberIncrementStepper />
-                      <NumberDecrementStepper />
-                    </NumberInputStepper>
-                  </NumberInput>
-                )}
-              />
-              <Text>GB</Text>
-              <Select
-                width={{ md: '80px', lg: '116px' }}
-                {...scpFormHook.register(`${type}DataDisks.${index}.volumeType`)}
-              >
-                {SELECT_DISK_TYPE.map((item: TSelectOption) => (
-                  <option key={item.value} value={item.value}>
-                    {item.label}
-                  </option>
-                ))}
-              </Select>
-            </Flex>
-          </FormControl>
-        </>
+        <FormControl className="mb-2 ml-4" key={field.id}>
+          <Flex alignItems={'center'}>
+            <Text mr={'12px'} fontSize={{ md: 14, lg: 16 }} fontWeight={400} color={'gray.600'}>
+              data volume
+            </Text>
+            <Controller
+              control={scpFormHook.control}
+              name={`${type}DataDisks.${index}.capacity`}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <NumberInput
+                  min={8}
+                  max={256}
+                  width={{ md: '80px', lg: '116px' }}
+                  value={value}
+                  onChange={onChange}
+                  onBlur={onBlur}
+                >
+                  <NumberInputField />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper>
+                      <IconFont iconName="icon-tune-up" height={14} />
+                    </NumberIncrementStepper>
+                    <NumberDecrementStepper>
+                      <IconFont iconName="icon-tune-down" height={14} />
+                    </NumberDecrementStepper>
+                  </NumberInputStepper>
+                </NumberInput>
+              )}
+            />
+            <Text ml={'4px'} fontSize={12} fontWeight={400} color={'gray.600'}>
+              GB
+            </Text>
+            <Select
+              ml={'24px'}
+              width={{ md: '80px', lg: '116px' }}
+              {...scpFormHook.register(`${type}DataDisks.${index}.volumeType`)}
+            >
+              {SELECT_DISK_TYPE.map((item: TSelectOption) => (
+                <option key={item.value} value={item.value}>
+                  {item.label}
+                </option>
+              ))}
+            </Select>
+          </Flex>
+        </FormControl>
       ))}
+
       <Flex
         w={150}
+        h={'28px'}
         alignItems={'center'}
-        className="cursor-pointer ml-3 mb-3 "
+        className="cursor-pointer mb-10 ml-4"
         onClick={() => {
           if (fields.length + 1 > 16) return;
-          append({ capacity: '8', volumeType: 'gp3', type: 'data' });
+          append({ volumeType: 'gp3', capacity: '8', type: 'data' });
         }}
       >
         <IconFont
           iconName="icon-more-clusterform"
           className="rounded hover:bg-grey-300"
           color="#0D55DA"
-          width={20}
-          height={20}
+          width={16}
+          height={16}
         />
-        <span className="pl-1">add data disk</span>
+        <Text ml={'4px'} fontSize={12} fontWeight={400} color={'gray.600'} lineHeight={'20px'}>
+          add data disk
+        </Text>
       </Flex>
     </>
   );

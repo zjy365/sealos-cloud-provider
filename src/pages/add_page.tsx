@@ -6,7 +6,6 @@ import {
   conversionPrice,
   debounce,
   generateYamlTemplate,
-  sliceMarkDown,
   TScpForm,
   TSelectOption,
   validResourcesName
@@ -14,13 +13,13 @@ import {
 import request from '@/services/request';
 import useSessionStore from '@/stores/session';
 import {
-  Box,
   Button,
   Flex,
   FormControl,
+  FormErrorMessage,
   IconButton,
   Input,
-  Select,
+  Text,
   useToast
 } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
@@ -28,7 +27,7 @@ import clsx from 'clsx';
 import { omit } from 'lodash';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
-import { useForm, UseFormReturn } from 'react-hook-form';
+import { Controller, useForm, UseFormReturn } from 'react-hook-form';
 import styles from './add_page.module.scss';
 
 export default function AddPage() {
@@ -84,8 +83,7 @@ export default function AddPage() {
 
   // Copy method with value and procedure isShowContent should be false
   const successCopy = (value: string, isShowContent = true) => {
-    const newValue = sliceMarkDown(value);
-    navigator.clipboard.writeText(newValue);
+    navigator.clipboard.writeText(value);
     toast({
       title: isShowContent ? `${value} copied` : 'copied',
       status: 'success',
@@ -95,44 +93,37 @@ export default function AddPage() {
     });
   };
 
-  const onFinish = async (values: any) => {
-    console.log(values, '-');
-
-    applyScpMutation();
+  const onFinish = async () => {
+    scpFormHook.handleSubmit(
+      async (data) => {
+        if (await isScpExist(data.infraName)) {
+          scpFormHook.setError('infraName', {
+            message: `${data.infraName} cluster already exists`
+          });
+        } else {
+          applyScpMutation();
+        }
+      },
+      (err) => {
+        console.log(err);
+      }
+    )();
   };
 
   const applyScpMutation = async () => {
-    const scpYaml = sliceMarkDown(yamlTemplate);
     const res = await request.post('/api/infra/aws_apply', {
       kubeconfig,
-      scp_yaml: scpYaml
+      scp_yaml: yamlTemplate
     });
-    console.log(res);
+    console.log(res, 'res');
   };
 
-  const isScpExist = (name: string) => {
-    return new Promise((resolve, reject) => {
-      if (name === '') {
-        reject('name is required');
-      }
-      if (!validResourcesName(name)) {
-        reject("Contains only lowercase letters, digits, and hyphens (-) and '.'");
-      }
-      debounce(async () => {
-        const res = await request.post('/api/infra/awsGet', {
-          kubeconfig,
-          infraName: name
-        });
-        if (!!res.data.status) {
-          reject(`infras.infra.sealos.io ${name} already exists`);
-        }
-      });
-      resolve('success');
+  const isScpExist = async (name: string) => {
+    const res = await request.post('/api/infra/awsGet', {
+      kubeconfig,
+      infraName: name
     });
-  };
-
-  const onFinishFailed = (errorInfo: any) => {
-    console.log('Failed:', errorInfo);
+    return !!res.data.status;
   };
 
   async function getPrice(form: TScpForm) {
@@ -143,12 +134,10 @@ export default function AddPage() {
     }
   }
 
-  scpFormHook.watch((value) => console.log(value));
-
-  const onValuesChange = (changedValues: any, allValues: any) => {
-    setYamlTemplate(generateYamlTemplate({ ...scpForm, ...allValues }));
-    debounce(() => getPrice({ ...scpForm, ...allValues }));
-  };
+  scpFormHook.watch((data: TScpForm | any) => {
+    setYamlTemplate(generateYamlTemplate(data));
+    debounce(() => getPrice({ ...scpForm, ...data }));
+  });
 
   useEffect(() => {
     getPrice(scpForm);
@@ -171,7 +160,9 @@ export default function AddPage() {
           ¥ <span style={{ color: '#ef7733' }}>{scpPrice}</span> / Hour
         </div>
 
-        <Button className={styles.create_btn}>Create Now</Button>
+        <Button className={styles.create_btn} onClick={onFinish}>
+          Create Now
+        </Button>
       </div>
       {/* infra form */}
       <div className={clsx(styles.form_container)}>
@@ -183,34 +174,71 @@ export default function AddPage() {
         >
           <div className={clsx(styles.custom_antd_form, 'absolute w-full pl-3 pb-5 lg:pl-8')}>
             <HeaderInfoComponent content="Info" size="lg" />
-            <FormControl>
+            <Controller
+              name={'infraName'}
+              control={scpFormHook.control}
+              rules={{
+                required: 'name is required',
+                pattern: {
+                  value: /^[a-z0-9]+([-.][a-z0-9]+)*$/,
+                  message:
+                    "Name must start and end with alphanumeric characters and only contain lowercase letters, numbers, '-', and '.'"
+                }
+              }}
+              render={({ field: { onChange, value }, fieldState: { error } }) => (
+                <FormControl isInvalid={!!error}>
+                  <Flex mt={'12px'} mb={'30px'}>
+                    <Text color={'#C85074'} className="px-1 pt-1">
+                      *
+                    </Text>
+                    <Text
+                      mr={'21px'}
+                      fontSize={{ md: 14, lg: 16 }}
+                      fontWeight={400}
+                      color={'gray.600'}
+                    >
+                      cluster name
+                    </Text>
+                    <Flex flexDirection={'column'}>
+                      <Input
+                        type={'text'}
+                        placeholder="name"
+                        width={{ md: '322px', lg: '360px' }}
+                        value={value}
+                        onChange={onChange}
+                      />
+                      {error && (
+                        <FormErrorMessage mt={0} maxW="sm" whiteSpace="normal">
+                          {error.message}
+                        </FormErrorMessage>
+                      )}
+                    </Flex>
+                  </Flex>
+                </FormControl>
+              )}
+            ></Controller>
+
+            {/* <FormControl mb={'24px'} ml={'16px'}>
               <Flex alignItems={'center'}>
-                <Box w={100} fontSize={14} fontWeight={400}>
-                  cluster name
-                </Box>
-                <Input
-                  width={{ md: '322px', lg: '360px' }}
-                  {...scpFormHook.register('infraName')}
-                />
-              </Flex>
-            </FormControl>
-            <FormControl>
-              <Flex alignItems={'center'}>
-                <Box w={100} fontSize={14}>
+                <Text mr={'12px'} fontSize={{ md: 14, lg: 16 }} fontWeight={400} color={'gray.600'}>
                   sealos version
-                </Box>
+                </Text>
                 <Select
-                  placeholder="sealos version"
                   width={{ md: '116px', lg: '160px' }}
                   {...scpFormHook.register('sealosVersion')}
                 >
                   <option value="Aws">Aws</option>
                 </Select>
-                <Box w={100} fontSize={14}>
+                <Text
+                  ml={'30px'}
+                  mr={'12px'}
+                  fontSize={{ md: 14, lg: 16 }}
+                  fontWeight={400}
+                  color={'gray.600'}
+                >
                   platform
-                </Box>
+                </Text>
                 <Select
-                  placeholder="platform"
                   width={{ md: '116px', lg: '160px' }}
                   {...scpFormHook.register('sealosPlatform')}
                 >
@@ -224,7 +252,7 @@ export default function AddPage() {
                   ))}
                 </Select>
               </Flex>
-            </FormControl>
+            </FormControl> */}
             <ScpFormComponent
               key={'master'}
               type="master"

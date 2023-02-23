@@ -42,8 +42,8 @@ export const generateYamlTemplate = (scpForm: TScpForm) => {
           image: scpForm.scpImage,
           disks: [
             {
-              capacity: scpForm.nodeRootDiskSize,
-              volumeType: scpForm.nodeRootDiskType,
+              capacity: scpForm.masterRootDiskSize,
+              volumeType: scpForm.masterRootDiskType,
               type: 'root'
             },
             ...scpForm.masterDataDisks
@@ -68,7 +68,7 @@ export const generateYamlTemplate = (scpForm: TScpForm) => {
   };
 
   const clusterYamlObj = {
-    apiVersion: 'infra.sealos.io/v1',
+    apiVersion: 'cluster.sealos.io/v1',
     kind: 'Cluster',
     metadata: {
       name: scpForm.infraName
@@ -82,22 +82,22 @@ export const generateYamlTemplate = (scpForm: TScpForm) => {
     const infraResult = JSYAML.dump(infraYamlObj);
     const clusterResult = JSYAML.dump(clusterYamlObj);
 
-    return `\`\`\`yaml\n${infraResult}---\n${clusterResult}\`\`\``;
+    return `${infraResult}---\n${clusterResult}`;
   } catch (error) {
     return 'error';
   }
 };
 
-export function sliceMarkDown(value: string): string {
-  const startStr = '```yaml';
-  const endStr = '```';
-  try {
-    const newValue = value.slice(startStr.length, -endStr.length);
-    return newValue;
-  } catch (error) {
-    return 'error';
-  }
-}
+// export function sliceMarkDown(value: string): string {
+//   const startStr = '```yaml';
+//   const endStr = '```';
+//   try {
+//     const newValue = value.slice(startStr.length, -endStr.length);
+//     return newValue;
+//   } catch (error) {
+//     return 'error';
+//   }
+// }
 
 export const convertKeyToLabel = (key: string) => {
   try {
