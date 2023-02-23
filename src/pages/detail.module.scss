@@ -29,7 +29,8 @@
   text-align: left;
 }
 .special_item {
-  flex-basis: 45%;
+  flex-basis: 40%;
+  flex-shrink: 0;
 }
 
 .scp_name {

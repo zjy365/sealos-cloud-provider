@@ -1,3 +1,4 @@
+import DeleteModal from '@/components/delete_modal';
 import IconFont from '@/components/iconfont';
 import { NodeStatusComponent } from '@/components/scp_status';
 import TitleInfo from '@/components/title_info';
@@ -5,7 +6,7 @@ import { convertKeyToLabel, TNodeListItem, TNodeMetaData } from '@/interfaces/in
 import request from '@/services/request';
 import useSessionStore from '@/stores/session';
 import { hideMiddleChars, splitChars } from '@/utils/strings';
-import { Button, IconButton, useToast } from '@chakra-ui/react';
+import { Button, IconButton, useDisclosure, useToast } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import Image from 'next/image';
@@ -75,16 +76,8 @@ export default function DetailPage() {
   const infraName = name || '';
   const { kubeconfig } = useSessionStore((state) => state.getSession());
   const [scpListType, setScpListType] = useState('All');
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
-
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleModalOpen = (value: boolean) => {
-    setIsModalOpen(value);
-  };
 
   const { data: scpInfo } = useQuery(['awsGet', infraName], () =>
     request.post('/api/infra/awsGet', { kubeconfig, infraName })
@@ -143,7 +136,7 @@ export default function DetailPage() {
         >
           Edit
         </Button>
-        <Button className="ml-2 h-9 w-24" variant={'outline'} onClick={showModal}>
+        <Button className="ml-2 h-9 w-24" variant={'outline'} onClick={onOpen}>
           Delete
         </Button>
       </div>
@@ -314,7 +307,7 @@ export default function DetailPage() {
           </div>
         </div>
       </div>
-      {/* <DeleteModal infraName={infraName as string} isOpen={isModalOpen} onOpen={handleModalOpen} /> */}
+      <DeleteModal isOpen={isOpen} onClose={onClose} infraName={infraName as string} />
     </div>
   );
 }
