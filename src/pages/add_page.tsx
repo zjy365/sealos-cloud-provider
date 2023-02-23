@@ -53,7 +53,10 @@ export default function AddPage() {
     nodeRootDiskType: 'gp3',
     nodeDataDisks: []
   };
-  const scpFormHook: UseFormReturn<TScpForm, any> = useForm<TScpForm>({ defaultValues: scpForm });
+  const scpFormHook: UseFormReturn<TScpForm, any> = useForm<TScpForm>({
+    defaultValues: scpForm,
+    mode: 'onChange'
+  });
 
   const { data } = useQuery(
     ['getConfigMap'],
@@ -115,7 +118,15 @@ export default function AddPage() {
       kubeconfig,
       scp_yaml: yamlTemplate
     });
-    console.log(res, 'res');
+    if (res.data.code === 200) {
+      toast({
+        title: 'success',
+        status: 'success',
+        position: 'top',
+        isClosable: true
+      });
+    }
+    router.push('/');
   };
 
   const isScpExist = async (name: string) => {

@@ -80,7 +80,7 @@ const ScpFormComponent = (props: TScpFormComponent) => {
                 min={1}
                 width={{ md: '116px', lg: '160px' }}
                 value={value}
-                onChange={onChange}
+                onChange={(valueString, valueNumber) => onChange(valueNumber)}
                 onBlur={onBlur}
               >
                 <NumberInputField />
@@ -128,7 +128,7 @@ const ScpFormComponent = (props: TScpFormComponent) => {
                 max={256}
                 width={{ md: '80px', lg: '116px' }}
                 value={value}
-                onChange={onChange}
+                onChange={(valueString, valueNumber) => onChange(valueNumber)}
                 onBlur={onBlur}
               >
                 <NumberInputField />
@@ -175,7 +175,7 @@ const ScpFormComponent = (props: TScpFormComponent) => {
                   max={256}
                   width={{ md: '80px', lg: '116px' }}
                   value={value}
-                  onChange={onChange}
+                  onChange={(valueString, valueNumber) => onChange(valueNumber)}
                   onBlur={onBlur}
                 >
                   <NumberInputField />
@@ -204,6 +204,9 @@ const ScpFormComponent = (props: TScpFormComponent) => {
                 </option>
               ))}
             </Select>
+            <div className="ml-5 hover:bg-grey-300 p-1" onClick={() => remove(index)}>
+              <IconFont iconName="icon-delete-button" width={20} height={20} color="#0D55DA" />
+            </div>
           </Flex>
         </FormControl>
       ))}
@@ -215,7 +218,8 @@ const ScpFormComponent = (props: TScpFormComponent) => {
         className="cursor-pointer mb-10 ml-4"
         onClick={() => {
           if (fields.length + 1 > 16) return;
-          append({ volumeType: 'gp3', capacity: '8', type: 'data' });
+          //@ts-ignore
+          append({ volumeType: 'gp3', capacity: 8, type: 'data' });
         }}
       >
         <IconFont
