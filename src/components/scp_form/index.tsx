@@ -18,7 +18,7 @@ import {
   useNumberInput
 } from '@chakra-ui/react';
 import clsx from 'clsx';
-import { useFieldArray, UseFormReturn } from 'react-hook-form';
+import { Controller, useFieldArray, UseFormReturn } from 'react-hook-form';
 import styles from './index.module.scss';
 import IconFont from '@/components/iconfont';
 
@@ -82,16 +82,26 @@ const ScpFormComponent = (props: TScpFormComponent) => {
           <Text w={100} fontSize={14}>
             count
           </Text>
-          <NumberInput
-            width={{ md: '116px', lg: '160px' }}
-            {...scpFormHook.register(`${type}Count`)}
-          >
-            <NumberInputField />
-            <NumberInputStepper>
-              <NumberIncrementStepper />
-              <NumberDecrementStepper />
-            </NumberInputStepper>
-          </NumberInput>
+
+          <Controller
+            control={scpFormHook.control}
+            name={`${type}Count`}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <NumberInput
+                min={1}
+                width={{ md: '116px', lg: '160px' }}
+                value={value}
+                onChange={onChange}
+                onBlur={onBlur}
+              >
+                <NumberInputField />
+                <NumberInputStepper>
+                  <NumberIncrementStepper />
+                  <NumberDecrementStepper />
+                </NumberInputStepper>
+              </NumberInput>
+            )}
+          />
           <Text w={100} fontSize={14}>
             flavor
           </Text>
@@ -110,13 +120,26 @@ const ScpFormComponent = (props: TScpFormComponent) => {
           <Text w={100} fontSize={14}>
             root volume
           </Text>
-          <NumberInput width={{ md: '80px', lg: '116px' }}>
-            <NumberInputField min={8} max={256} {...scpFormHook.register(`${type}RootDiskSize`)} />
-            <NumberInputStepper>
-              <NumberIncrementStepper />
-              <NumberDecrementStepper />
-            </NumberInputStepper>
-          </NumberInput>
+          <Controller
+            control={scpFormHook.control}
+            name={`${type}RootDiskSize`}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <NumberInput
+                min={8}
+                max={256}
+                width={{ md: '80px', lg: '116px' }}
+                value={value}
+                onChange={onChange}
+                onBlur={onBlur}
+              >
+                <NumberInputField />
+                <NumberInputStepper>
+                  <NumberIncrementStepper />
+                  <NumberDecrementStepper />
+                </NumberInputStepper>
+              </NumberInput>
+            )}
+          />
           <Text>GB</Text>
           <Text w={100} fontSize={14}>
             flavor
@@ -140,17 +163,26 @@ const ScpFormComponent = (props: TScpFormComponent) => {
               <Text w={100} fontSize={14}>
                 data volume
               </Text>
-              <NumberInput width={{ md: '80px', lg: '116px' }}>
-                <NumberInputField
-                  min={8}
-                  max={256}
-                  {...scpFormHook.register(`${type}DataDisks.${index}.capacity`)}
-                />
-                <NumberInputStepper>
-                  <NumberIncrementStepper />
-                  <NumberDecrementStepper />
-                </NumberInputStepper>
-              </NumberInput>
+              <Controller
+                control={scpFormHook.control}
+                name={`${type}DataDisks.${index}.capacity`}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <NumberInput
+                    min={8}
+                    max={256}
+                    width={{ md: '80px', lg: '116px' }}
+                    value={value}
+                    onChange={onChange}
+                    onBlur={onBlur}
+                  >
+                    <NumberInputField />
+                    <NumberInputStepper>
+                      <NumberIncrementStepper />
+                      <NumberDecrementStepper />
+                    </NumberInputStepper>
+                  </NumberInput>
+                )}
+              />
               <Text>GB</Text>
               <Select
                 width={{ md: '80px', lg: '116px' }}

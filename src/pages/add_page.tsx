@@ -143,7 +143,7 @@ export default function AddPage() {
     }
   }
 
-  scpFormHook.watch((value, { name, type }) => console.log(value, name, type));
+  scpFormHook.watch((value) => console.log(value));
 
   const onValuesChange = (changedValues: any, allValues: any) => {
     setYamlTemplate(generateYamlTemplate({ ...scpForm, ...allValues }));
