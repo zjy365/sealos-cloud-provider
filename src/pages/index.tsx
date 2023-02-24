@@ -28,14 +28,16 @@ function FrontPage() {
   const { data: scpLists, isSuccess } = useQuery(
     ['getAwsAll'],
     async () => {
-      const res = await request.post('/api/infra/awsGetAll', { kubeconfig });
-      let allReady = res.data.items?.every((item: InfraInfo) => {
-        return item?.status?.status === 'Running';
-      });
-      if (allReady) {
-        setScpStatus('Running');
-      }
-      return res;
+      try {
+        const res = await request.post('/api/infra/awsGetAll', { kubeconfig });
+        let allReady = res.data.items?.every((item: InfraInfo) => {
+          return item?.status?.status === 'Running';
+        });
+        if (allReady) {
+          setScpStatus('Running');
+        }
+        return res;
+      } catch (error) {}
     },
     {
       refetchInterval: scpStatus === 'Pending' ? 10 * 1000 : false, //轮询时间
@@ -44,8 +46,10 @@ function FrontPage() {
   );
 
   const { data: clusterLists } = useQuery(['getClusters'], async () => {
-    const res = await request.post('/api/infra/getAllCluster', { kubeconfig });
-    return res;
+    try {
+      const res = await request.post('/api/infra/getAllCluster', { kubeconfig });
+      return res;
+    } catch (err) {}
   });
 
   const getClusterStatus = (infraName: string) => {

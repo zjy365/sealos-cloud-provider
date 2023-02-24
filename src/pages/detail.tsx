@@ -79,15 +79,20 @@ export default function DetailPage() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
 
-  const { data: scpInfo } = useQuery(['awsGet', infraName], () =>
-    request.post('/api/infra/awsGet', { kubeconfig, infraName })
-  );
+  const { data: scpInfo } = useQuery(['awsGet', infraName], async () => {
+    try {
+      return await request.post('/api/infra/awsGet', { kubeconfig, infraName });
+    } catch (error) {}
+  });
+
   const scpMasterLists = scpInfo?.data?.spec?.hosts[0] || [];
   const scpNodeLists = scpInfo?.data?.spec?.hosts[1] || [];
 
-  const { data: clusterInfo } = useQuery(['awsGetCluster', infraName], () =>
-    request.post('/api/infra/getCluster', { kubeconfig, clusterName: infraName })
-  );
+  const { data: clusterInfo } = useQuery(['awsGetCluster', infraName], async () => {
+    try {
+      return await request.post('/api/infra/getCluster', { kubeconfig, clusterName: infraName });
+    } catch (error) {}
+  });
 
   const backIndexPage = () => {
     router.push('/');

@@ -19,10 +19,11 @@ import {
   FormErrorMessage,
   IconButton,
   Input,
+  Spinner,
   Text,
   useToast
 } from '@chakra-ui/react';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { omit } from 'lodash';
 import { useRouter } from 'next/router';
@@ -58,14 +59,14 @@ export default function AddPage() {
     mode: 'onChange'
   });
 
-  const { data } = useQuery(
-    ['getConfigMap'],
-    async () =>
-      await request.post('/api/infra/getConfigMap', {
+  const { data } = useQuery(['getConfigMap'], async () => {
+    try {
+      return await request.post('/api/infra/getConfigMap', {
         kubeconfig,
         name: 'infra-ami-config'
-      })
-  );
+      });
+    } catch (error) {}
+  });
   let imageOptions = [] as TSelectOption[];
   if (data?.data?.code === 200) {
     let imageKeyList = omit(data?.data?.data, ['lower-limit-GPU', 'lower-limit']);
@@ -105,44 +106,51 @@ export default function AddPage() {
               message: `${data.infraName} cluster already exists`
             });
           } else {
-            applyScpMutation();
+            applyScpMutation.mutate();
           }
         },
         (err) => {}
       )();
-    } catch (err) {}
+    } catch (error) {}
   };
 
-  const applyScpMutation = async () => {
-    const res = await request.post('/api/infra/aws_apply', {
-      kubeconfig,
-      scp_yaml: yamlTemplate
-    });
-    if (res.data.code === 200) {
-      toast({
-        title: 'success',
-        status: 'success',
-        position: 'top',
-        isClosable: true
-      });
+  const applyScpMutation = useMutation({
+    mutationFn: () => {
+      return request.post('/api/infra/aws_apply', { scp_yaml: yamlTemplate, kubeconfig });
+    },
+    onSuccess: (data) => {
+      if (data.data.code === 200) {
+        toast({
+          title: 'success',
+          status: 'success',
+          position: 'top',
+          isClosable: true
+        });
+      }
+    },
+    onSettled: () => {
+      router.push('/');
     }
-    router.push('/');
-  };
+  });
 
   const isScpExist = async (name: string) => {
-    const res = await request.post('/api/infra/awsGet', {
-      kubeconfig,
-      infraName: name
-    });
-    return !!res.data.status;
+    try {
+      const res = await request.post('/api/infra/awsGet', {
+        kubeconfig,
+        infraName: name
+      });
+      return !!res.data.status;
+    } catch (error) {}
   };
 
   async function getPrice(form: TScpForm) {
-    const res = await request.post('/api/infra/awsGetPrice', form);
-    if (res?.data?.code === 200) {
-      let price = conversionPrice(res?.data?.sumPrice, 2);
-      setScpPrice(price);
-    }
+    try {
+      const res = await request.post('/api/infra/awsGetPrice', form);
+      if (res?.data?.code === 200) {
+        let price = conversionPrice(res?.data?.sumPrice, 2);
+        setScpPrice(price);
+      }
+    } catch (error) {}
   }
 
   scpFormHook.watch((data: TScpForm | any) => {
@@ -171,7 +179,12 @@ export default function AddPage() {
           ¥ <span style={{ color: '#ef7733' }}>{scpPrice}</span> / Hour
         </div>
 
-        <Button className={styles.create_btn} onClick={onFinish}>
+        <Button
+          className={styles.create_btn}
+          onClick={onFinish}
+          isLoading={applyScpMutation.isLoading}
+          loadingText="Submitting"
+        >
           Create Now
         </Button>
       </div>

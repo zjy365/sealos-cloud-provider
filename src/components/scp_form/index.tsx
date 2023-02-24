@@ -181,10 +181,10 @@ const ScpFormComponent = (props: TScpFormComponent) => {
                   <NumberInputField />
                   <NumberInputStepper>
                     <NumberIncrementStepper>
-                      <IconFont iconName="icon-tune-up" height={14} />
+                      <IconFont iconName="icon-tune-up" height={14} color="#0F0F34" />
                     </NumberIncrementStepper>
                     <NumberDecrementStepper>
-                      <IconFont iconName="icon-tune-down" height={14} />
+                      <IconFont iconName="icon-tune-down" height={14} color="#0F0F34" />
                     </NumberDecrementStepper>
                   </NumberInputStepper>
                 </NumberInput>
