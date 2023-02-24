@@ -33,7 +33,6 @@ function DeleteModal(props: TDeleteModal) {
         scp_name: infraName,
         kubeconfig
       });
-      console.log(result);
     } catch (error) {}
     router.push('/');
   };

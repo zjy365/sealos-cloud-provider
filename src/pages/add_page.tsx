@@ -97,20 +97,20 @@ export default function AddPage() {
   };
 
   const onFinish = async () => {
-    scpFormHook.handleSubmit(
-      async (data) => {
-        if (await isScpExist(data.infraName)) {
-          scpFormHook.setError('infraName', {
-            message: `${data.infraName} cluster already exists`
-          });
-        } else {
-          applyScpMutation();
-        }
-      },
-      (err) => {
-        console.log(err);
-      }
-    )();
+    try {
+      scpFormHook.handleSubmit(
+        async (data) => {
+          if (await isScpExist(data.infraName)) {
+            scpFormHook.setError('infraName', {
+              message: `${data.infraName} cluster already exists`
+            });
+          } else {
+            applyScpMutation();
+          }
+        },
+        (err) => {}
+      )();
+    } catch (err) {}
   };
 
   const applyScpMutation = async () => {

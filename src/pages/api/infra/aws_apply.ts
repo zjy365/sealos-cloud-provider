@@ -19,7 +19,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const namespace = GetUserDefaultNameSpace(kube_user.name);
     const specs = JSYAML.loadAll(scp_yaml) as k8s.KubernetesObject[];
     const validSpecs = specs.filter((s) => s && s.kind && s.metadata);
-    console.log(validSpecs);
 
     let temp_crd = [];
     for (const spec of validSpecs) {

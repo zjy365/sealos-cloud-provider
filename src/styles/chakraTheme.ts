@@ -18,21 +18,21 @@ const Button = defineStyleConfig({
       },
       _disabled: {
         _hover: {
-          bg: 'primaryblue.500 !important'
+          bg: 'primaryblue.400 !important'
         }
       }
     },
     outline: {
-      bg: 'grey.600',
-      color: 'secondaryblue.600',
+      bg: 'palegrey.600',
+      color: 'primaryblue.600',
       _hover: {
         bg: 'secondaryblue.300'
       },
       _disabled: {
-        color: 'secondaryblue.400'
+        color: 'palegrey.600'
       },
       borderWidth: '1px',
-      borderColor: 'secondaryblue.600'
+      borderColor: 'primaryblue.600'
     }
   },
   // The default size and variant values
@@ -58,18 +58,17 @@ const Input: ComponentStyleConfig = {
   variants: {
     filled: {
       field: {
-        background: 'grey.100',
         border: '0.5px solid',
-        borderColor: 'grey.700',
+        background: 'fullgrey.100',
+        borderColor: 'fullgrey.400',
         _hover: {
-          border: '1px solid',
-          borderColor: 'secondaryblue.600',
-          background: 'grey.100'
+          border: '0.5px solid',
+          background: 'fullgrey.100',
+          borderColor: 'primaryblue.600'
         },
         _focus: {
-          border: '1px solid',
           background: 'transparent',
-          borderColor: 'secondaryblue.600'
+          borderColor: 'primaryblue.600'
         }
       }
     }
@@ -92,17 +91,17 @@ const Select = defineStyleConfig({
   variants: {
     filled: {
       field: {
-        background: 'grey.200',
-        border: '1px solid',
-        borderColor: 'secondaryblue.700',
+        border: '0.5px solid',
+        background: 'fullgrey.200',
+        borderColor: 'fullgrey.400',
         _hover: {
-          border: '1px solid',
-          borderColor: 'secondaryblue.600',
-          background: 'grey.100'
+          border: '0.5px solid',
+          background: 'fullgrey.200',
+          borderColor: 'primaryblue.600'
         }
       },
       icon: {
-        color: 'gray.600'
+        color: 'textgray.600'
       }
     }
   },
@@ -124,19 +123,17 @@ const NumberInput = defineStyleConfig({
   variants: {
     filled: {
       field: {
-        background: 'grey.100',
         border: '0.5px solid',
-        borderColor: 'grey.700',
+        background: 'fullgrey.200',
+        borderColor: 'fullgrey.400',
         _hover: {
-          border: '1px solid',
-          borderColor: 'secondaryblue.600',
-          background: 'grey.100'
-        },
-        _focus: {
-          border: '1px solid',
-          background: 'transparent',
-          borderColor: 'secondaryblue.600'
+          border: '0.5px solid',
+          background: 'fullgrey.200',
+          borderColor: 'primaryblue.600'
         }
+      },
+      icon: {
+        color: 'textgray.600'
       }
     }
   },
@@ -169,38 +166,50 @@ const theme = extendTheme({
       200: '#CFDDF8',
       300: '#9EBBF0',
       400: '#6E99E9',
-      500: '#33BAB1',
+      500: '#3D77E1',
       600: '#0D55DA',
       700: '#0A44AE',
       800: '#083383',
-      900: '#083383',
+      900: '#052257',
       1000: '#03112C'
     },
     secondaryblue: {
-      100: '#E7EEFB',
+      100: '#FCFCFE',
+      200: '#F8F9FE',
       300: '#F1F3FD',
-      400: '#6E99E9',
-      600: '#0D55DA',
-      700: '#B1B4C7'
+      400: '#EBEDFB',
+      500: '#E4E7FA',
+      600: '#DDE1F9',
+      700: '#B1B4C7',
+      800: '#858795'
     },
-    grey: {
+    fullgrey: {
       100: '#FAFAFC',
       200: '#F4F6FA',
+      300: '#E9EDF5',
       400: '#DEE3EF',
-      600: '#FCFDFE',
-      700: '#A0A7B7'
+      500: '#D3DAEA',
+      600: '#C8D1E5',
+      700: '#A0A7B7',
+      800: '#787D89'
     },
-    gray: {
+    textgray: {
       100: '#E7E7EB',
+      200: '#CFCFD6',
+      300: '#9A999D',
       400: '#6F6F85',
       500: '#3F3F5D',
       600: '#0F0F34',
+      700: '#0C0C2A',
       800: '#09091F'
     },
     palegrey: {
       100: '#FFFFFF',
       200: '#FEFFFF',
-      400: '#FDFEFE'
+      300: '#FEFEFF',
+      400: '#FDFEFE',
+      500: '#FDFDFE',
+      600: '#FCFDFE'
     },
     error: {
       100: '#FDECEE',
