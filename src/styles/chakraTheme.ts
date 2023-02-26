@@ -1,9 +1,4 @@
-import {
-  ComponentStyleConfig,
-  defineStyle,
-  defineStyleConfig,
-  extendTheme
-} from '@chakra-ui/react';
+import { ComponentStyleConfig, defineStyleConfig, extendTheme } from '@chakra-ui/react';
 
 const Button = defineStyleConfig({
   baseStyle: {
@@ -29,7 +24,7 @@ const Button = defineStyleConfig({
         bg: 'secondaryblue.300'
       },
       _disabled: {
-        color: 'palegrey.600'
+        color: 'primaryblue.400'
       },
       borderWidth: '1px',
       borderColor: 'primaryblue.600'

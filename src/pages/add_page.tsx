@@ -7,8 +7,7 @@ import {
   debounce,
   generateYamlTemplate,
   TScpForm,
-  TSelectOption,
-  validResourcesName
+  TSelectOption
 } from '@/interfaces/infra_common';
 import request from '@/services/request';
 import useSessionStore from '@/stores/session';
@@ -19,7 +18,6 @@ import {
   FormErrorMessage,
   IconButton,
   Input,
-  Spinner,
   Text,
   useToast
 } from '@chakra-ui/react';
