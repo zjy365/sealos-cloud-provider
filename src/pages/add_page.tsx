@@ -7,7 +7,8 @@ import {
   debounce,
   generateYamlTemplate,
   TScpForm,
-  TSelectOption
+  TSelectOption,
+  TScpDetailSpecHosts
 } from '@/interfaces/infra_common';
 import request from '@/services/request';
 import useSessionStore from '@/stores/session';
@@ -25,15 +26,18 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { omit } from 'lodash';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Controller, useForm, UseFormReturn } from 'react-hook-form';
 import styles from './add_page.module.scss';
 
 export default function AddPage() {
   const router = useRouter();
+  const { name } = router.query;
+  const editName = name || '';
   const { kubeconfig } = useSessionStore((state) => state.getSession());
   const toast = useToast();
-  const scpForm: TScpForm = {
+  const oldScpFormYaml = useRef(null);
+  const [scpForm, setScpForm] = useState<TScpForm>({
     infraName: '',
     scpImage: 'ami-048280a00d5085dd1',
     sealosVersion: '',
@@ -51,7 +55,8 @@ export default function AddPage() {
     nodeRootDiskSize: 8,
     nodeRootDiskType: 'gp3',
     nodeDataDisks: []
-  };
+  });
+
   const scpFormHook: UseFormReturn<TScpForm, any> = useForm<TScpForm>({
     defaultValues: scpForm,
     mode: 'onChange'
@@ -99,7 +104,9 @@ export default function AddPage() {
     try {
       scpFormHook.handleSubmit(
         async (data) => {
-          if (await isScpExist(data.infraName)) {
+          if (data.infraName === editName) {
+            updateScpMutation.mutate();
+          } else if ((await isScpExist(data.infraName)) && data.infraName !== editName) {
             scpFormHook.setError('infraName', {
               message: `${data.infraName} cluster already exists`
             });
@@ -115,6 +122,30 @@ export default function AddPage() {
   const applyScpMutation = useMutation({
     mutationFn: () => {
       return request.post('/api/infra/aws_apply', { scp_yaml: yamlTemplate, kubeconfig });
+    },
+    onSuccess: (data) => {
+      if (data.data.code === 200) {
+        toast({
+          title: 'success',
+          status: 'success',
+          position: 'top',
+          isClosable: true
+        });
+      }
+    },
+    onSettled: () => {
+      router.push('/');
+    }
+  });
+
+  const updateScpMutation = useMutation({
+    mutationFn: () => {
+      return request.post('/api/infra/awsUpdate', {
+        scp_yaml: yamlTemplate,
+        old_scp_yaml: oldScpFormYaml.current,
+        kubeconfig,
+        scp_name: editName
+      });
     },
     onSuccess: (data) => {
       if (data.data.code === 200) {
@@ -160,6 +191,51 @@ export default function AddPage() {
     getPrice(scpForm);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const getScpDetailByName = async (name: string) => {
+    try {
+      const res = await request.post('/api/infra/awsGet', {
+        kubeconfig,
+        infraName: name
+      });
+      if (res?.data?.metadata) {
+        let { name } = res?.data?.metadata;
+        let masterInfo = res?.data?.spec?.hosts[0] as TScpDetailSpecHosts;
+        let nodeInfo = res?.data?.spec?.hosts[1] as TScpDetailSpecHosts;
+        const payload = {
+          infraName: name,
+          scpImage: masterInfo.image,
+          sealosVersion: '',
+          sealosPlatform: res?.data?.spec?.platform,
+          clusterImages: ['labring/kubernetes:v1.25.5', 'labring/calico:v3.24.1'],
+          // master
+          masterCount: masterInfo?.count,
+          masterType: masterInfo?.flavor,
+          masterRootDiskSize: masterInfo?.disks[0].capacity,
+          masterRootDiskType: masterInfo?.disks[0].volumeType,
+          masterDataDisks: masterInfo?.disks.slice(1) || [],
+          // node
+          nodeCount: nodeInfo?.count,
+          nodeType: nodeInfo?.flavor,
+          nodeRootDiskSize: nodeInfo?.disks[0].capacity,
+          nodeRootDiskType: nodeInfo?.disks[0].volumeType,
+          nodeDataDisks: nodeInfo?.disks.slice(1) || []
+        };
+        //@ts-ignore
+        oldScpFormYaml.current = generateYamlTemplate(payload);
+        //@ts-ignore
+        scpFormHook.reset(payload);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (!!editName) {
+      getScpDetailByName(editName as string);
+    }
+  }, [editName]);
 
   return (
     <div className="flex flex-col w-full h-full">
@@ -223,6 +299,7 @@ export default function AddPage() {
                     </Text>
                     <Flex flexDirection={'column'}>
                       <Input
+                        isDisabled={!!editName}
                         type={'text'}
                         placeholder="name"
                         width={{ md: '322px', lg: '360px' }}

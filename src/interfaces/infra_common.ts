@@ -88,17 +88,6 @@ export const generateYamlTemplate = (scpForm: TScpForm) => {
   }
 };
 
-// export function sliceMarkDown(value: string): string {
-//   const startStr = '```yaml';
-//   const endStr = '```';
-//   try {
-//     const newValue = value.slice(startStr.length, -endStr.length);
-//     return newValue;
-//   } catch (error) {
-//     return 'error';
-//   }
-// }
-
 export const convertKeyToLabel = (key: string) => {
   try {
     const item = SELECT_SCP_TYPE.find((item) => item.value === key);
@@ -161,7 +150,12 @@ export enum EScpListType {
 
 export type TSelectOption = { label: string; value: string };
 
-export type TDiskOption = { capacity: string; volumeType: string; type?: 'root' | 'data' };
+export type TDiskOption = {
+  capacity: string;
+  volumeType: string;
+  type?: 'root' | 'data';
+  id?: string;
+};
 
 export type TScpForm = {
   infraName: string;
@@ -181,4 +175,17 @@ export type TScpForm = {
   nodeRootDiskSize: number;
   nodeRootDiskType: string;
   nodeDataDisks: TDiskOption[];
+};
+
+export type TScpDetailSpecHosts = {
+  arch: string;
+  count: number;
+  disks: {
+    capacity: number;
+    id: string;
+    type: string;
+    volumeType: string;
+  }[];
+  flavor: string;
+  image: string;
 };

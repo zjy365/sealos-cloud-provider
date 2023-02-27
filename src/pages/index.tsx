@@ -1,9 +1,11 @@
+import DeleteModal from '@/components/delete_modal';
+import Iconfont from '@/components/iconfont';
 import IconFont from '@/components/iconfont';
 import { StatusComponent } from '@/components/scp_status';
 import request from '@/services/request';
 import useSessionStore from '@/stores/session';
 import { formatTime } from '@/utils/format';
-import { Button } from '@chakra-ui/react';
+import { Button, useDisclosure } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import Image from 'next/image';
@@ -23,6 +25,8 @@ function FrontPage() {
   const router = useRouter();
   const { kubeconfig } = useSessionStore((state) => state.getSession());
   const [scpStatus, setScpStatus] = useState('Pending');
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [openName, setOpenName] = useState('');
 
   // Obtaining the cluster list
   const { data: scpLists, isSuccess } = useQuery(
@@ -138,12 +142,38 @@ function FrontPage() {
                 <div className={clsx(styles.row_item, 'text-xs lg:text-sm font-medium')}>
                   {item?.spec?.availabilityZone}
                 </div>
-                <div className={clsx(styles.row_item)}></div>
+                <div className={clsx(styles.row_item, 'flex')}>
+                  <div
+                    className="cursor-pointer"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      router.push({ pathname: '/add_page', query: { name: item?.metadata?.name } });
+                    }}
+                  >
+                    <Iconfont iconName="icon-edit-button" width={28} height={28} color="#0D55DA" />
+                  </div>
+                  <div
+                    className="ml-4 cursor-pointer"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setOpenName(item?.metadata?.name);
+                      onOpen();
+                    }}
+                  >
+                    <Iconfont
+                      iconName="icon-delete-button"
+                      width={28}
+                      height={28}
+                      color="#0D55DA"
+                    />
+                  </div>
+                </div>
               </div>
             );
           })}
         </div>
       )}
+      <DeleteModal isOpen={isOpen} onClose={onClose} infraName={openName} />
     </>
   );
 }

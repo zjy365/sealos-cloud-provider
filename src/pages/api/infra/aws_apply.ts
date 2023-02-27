@@ -34,9 +34,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const result = await ApplyYaml(kc, scp_crd);
     JsonResp(result, res);
   } catch (err) {
-    if (err instanceof k8s.HttpError) {
-      console.log(err.body.message, '---');
-    }
+    console.log(err, 'apply-err');
     JsonResp(err, res);
   }
 }

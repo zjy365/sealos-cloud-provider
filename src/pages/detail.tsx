@@ -81,6 +81,9 @@ export default function DetailPage() {
               height={20}
             />
           }
+          onClick={() => {
+            router.push({ pathname: '/add_page', query: { name: infraName } });
+          }}
         >
           Edit
         </Button>
