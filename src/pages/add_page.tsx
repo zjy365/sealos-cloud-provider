@@ -213,13 +213,23 @@ export default function AddPage() {
           masterType: masterInfo?.flavor,
           masterRootDiskSize: masterInfo?.disks[0].capacity,
           masterRootDiskType: masterInfo?.disks[0].volumeType,
-          masterDataDisks: masterInfo?.disks.slice(1) || [],
+          masterDataDisks:
+            masterInfo?.disks.slice(1).map((item) => ({
+              capacity: item.capacity,
+              volumeType: item.volumeType,
+              type: item.type
+            })) || [],
           // node
           nodeCount: nodeInfo?.count,
           nodeType: nodeInfo?.flavor,
           nodeRootDiskSize: nodeInfo?.disks[0].capacity,
           nodeRootDiskType: nodeInfo?.disks[0].volumeType,
-          nodeDataDisks: nodeInfo?.disks.slice(1) || []
+          nodeDataDisks:
+            nodeInfo?.disks.slice(1).map((item) => ({
+              capacity: item.capacity,
+              volumeType: item.volumeType,
+              type: item.type
+            })) || []
         };
         //@ts-ignore
         oldScpFormYaml.current = generateYamlTemplate(payload);
