@@ -1,0 +1,46 @@
+.table_header {
+  color: #6f6f85;
+  line-height: 16px;
+  border-bottom: 0.5px solid #e7e7eb;
+  font-weight: 400;
+  font-size: 10px;
+  td {
+    padding: 10px 10px;
+  }
+}
+
+.table_row {
+  td {
+    padding: 8px 10px;
+    border-bottom: none;
+  }
+  color: #0f0f34;
+}
+
+.meta_id {
+  word-break: break-all;
+  font-size: 10px;
+  font-weight: 400;
+  color: #3f3f5d;
+}
+
+.meta_ip {
+  font-weight: 400;
+  font-size: 12px;
+  padding: 8px 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  &:hover {
+    background: #e9edf5;
+    border-radius: 4px;
+    .meta_ip_copy {
+      opacity: 1;
+    }
+  }
+  .meta_ip_copy {
+    cursor: pointer;
+    opacity: 0;
+    padding: 2px;
+  }
+}

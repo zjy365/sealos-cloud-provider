@@ -1,74 +1,17 @@
+import ChakraTable from '@/components/chakra_table';
 import DeleteModal from '@/components/delete_modal';
 import IconFont from '@/components/iconfont';
-import { NodeStatusComponent } from '@/components/scp_status';
 import TitleInfo from '@/components/title_info';
-import { convertKeyToLabel, TNodeListItem, TNodeMetaData } from '@/interfaces/infra_common';
+import { convertKeyToLabel } from '@/interfaces/infra_common';
 import request from '@/services/request';
 import useSessionStore from '@/stores/session';
 import { hideMiddleChars, splitChars } from '@/utils/strings';
 import { Button, IconButton, useDisclosure, useToast } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
-import Image from 'next/image';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import styles from './detail.module.scss';
-
-const ScpNodeItem = (props: TNodeListItem) => {
-  const { type, item } = props;
-  const toast = useToast();
-  const successCopy = (value: string, isShowContent = true) => {
-    navigator.clipboard.writeText(value);
-    toast({
-      title: isShowContent ? `${value} copied` : 'copied',
-      status: 'success',
-      position: 'top',
-      duration: 2000,
-      isClosable: true
-    });
-  };
-  return (
-    <div className={clsx(styles.table_row)} key={item?.id}>
-      <div className={clsx(styles.row_item, styles.special_item, 'flex')}>
-        {type === 'master' && (
-          <Image alt="master" src="/images/scp_master.svg" width={24} height={24} />
-        )}
-        {type === 'node' && <Image alt="node" src="/images/scp_node.svg" width={24} height={24} />}
-        <div className="flex flex-col pl-4">
-          <span className={'text-xs font-semibold  text-black-600'}>
-            {type === 'master' ? 'Master' : 'Node'}
-          </span>
-          <span className={styles.meta_id}>{item?.id}</span>
-        </div>
-      </div>
-      <div className={clsx(styles.row_item)}>
-        <NodeStatusComponent status={item?.status} />
-      </div>
-      <div className={clsx(styles.row_item)}>
-        <div className={styles.meta_ip}>
-          <span>{item?.ipaddress[0]?.ipValue}</span>
-          <span
-            className={styles.meta_ip_copy}
-            onClick={() => successCopy(item?.ipaddress[0]?.ipValue)}
-          >
-            <IconFont iconName="icon-copy" color="#0D55DA" width={12} height={12} />
-          </span>
-        </div>
-      </div>
-      <div className={clsx(styles.row_item)}>
-        <div className={styles.meta_ip}>
-          <span>{item?.ipaddress[1]?.ipValue}</span>
-          <span
-            className={styles.meta_ip_copy}
-            onClick={() => successCopy(item?.ipaddress[1]?.ipValue)}
-          >
-            <IconFont iconName="icon-copy" color="#0D55DA" width={12} height={12} />
-          </span>
-        </div>
-      </div>
-    </div>
-  );
-};
 
 export default function DetailPage() {
   const router = useRouter();
@@ -171,22 +114,21 @@ export default function DetailPage() {
               </div>
             </div>
           </div>
-          <div className={clsx(styles.list_container)}>
-            <div className={clsx(styles.table_header)}>
-              <div className={clsx(styles.header_item, styles.special_item)}>Name</div>
-              <div className={clsx(styles.header_item)}>Status</div>
-              <div className={styles.header_item}>E-IP</div>
-              <div className={styles.header_item}>IP</div>
-            </div>
-            {(scpListType === 'All' || scpListType === 'Masters') &&
-              scpMasterLists?.metadata?.map((item: TNodeMetaData) => {
-                return <ScpNodeItem type="master" item={item} key={item.id} />;
-              })}
-            {(scpListType === 'All' || scpListType === 'Nodes') &&
-              scpNodeLists?.metadata?.map((item: TNodeMetaData) => {
-                return <ScpNodeItem type="node" item={item} key={item.id} />;
-              })}
-          </div>
+          {(scpListType === 'All' || scpListType === 'Masters') && (
+            <ChakraTable
+              type="master"
+              tableHeader={['Name', 'Status', 'E-IP', 'IP']}
+              tableData={scpMasterLists?.metadata}
+            />
+          )}
+          {(scpListType === 'All' || scpListType === 'Nodes') && (
+            <ChakraTable
+              type="node"
+              tableHeader={['Name', 'Status', 'E-IP', 'IP']}
+              tableData={scpNodeLists?.metadata}
+              showHeader={scpListType === 'Nodes' ? true : false}
+            />
+          )}
         </div>
         {/* @media (min-width: 1024px) master */}
         <div className={clsx(styles.base_card_style, 'hidden lg:block basis-2/5')}>
@@ -200,17 +142,11 @@ export default function DetailPage() {
             />
             <span style={{ color: '#0D55DA' }}>Master</span>
           </div>
-          <div className={clsx(styles.list_container)}>
-            <div className={clsx(styles.table_header)}>
-              <div className={clsx(styles.header_item, styles.special_item)}>Name</div>
-              <div className={clsx(styles.header_item)}>Status</div>
-              <div className={styles.header_item}>E-IP</div>
-              <div className={styles.header_item}>IP</div>
-            </div>
-            {scpMasterLists?.metadata?.map((item: TNodeMetaData) => {
-              return <ScpNodeItem type="master" item={item} key={item.id} />;
-            })}
-          </div>
+          <ChakraTable
+            type="master"
+            tableHeader={['Name', 'Status', 'E-IP', 'IP']}
+            tableData={scpMasterLists?.metadata}
+          />
         </div>
         {/* @media (min-width: 1024px) node */}
         <div className={clsx(styles.base_card_style, 'hidden lg:block basis-2/5 ml-3')}>
@@ -224,17 +160,11 @@ export default function DetailPage() {
             />
             <span style={{ color: '#0D55DA' }}>Node</span>
           </div>
-          <div className={clsx(styles.list_container)}>
-            <div className={clsx(styles.table_header)}>
-              <div className={clsx(styles.header_item, styles.special_item)}>Name</div>
-              <div className={clsx(styles.header_item)}>Status</div>
-              <div className={styles.header_item}>E-IP</div>
-              <div className={styles.header_item}>IP</div>
-            </div>
-            {scpNodeLists?.metadata?.map((item: TNodeMetaData) => {
-              return <ScpNodeItem type="node" item={item} key={item.id} />;
-            })}
-          </div>
+          <ChakraTable
+            type="node"
+            tableHeader={['Name', 'Status', 'E-IP', 'IP']}
+            tableData={scpNodeLists?.metadata}
+          />
         </div>
         {/* scp info */}
         <div className={clsx('basis-1/4 ml-3 flex flex-col lg:basis-1/5')}>
