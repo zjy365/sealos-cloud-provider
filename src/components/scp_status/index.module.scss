@@ -5,7 +5,7 @@
   padding: 4px 8px;
 }
 
-@mixin base_status($text_color) {
+@mixin base_cluster_status($text_color) {
   font-weight: 600;
   font-size: 12px;
   line-height: 150%;
@@ -13,32 +13,32 @@
 }
 
 .Creating {
-  @include base_status(#3d77e1);
+  @include base_cluster_status(#3d77e1);
   background: #e0eaff;
 }
 
 .Running {
-  @include base_status(#029e9e);
+  @include base_cluster_status(#029e9e);
   background-color: #ccecec;
 }
 
 .Starting {
-  @include base_status(#662fdc);
+  @include base_cluster_status(#662fdc);
   background: #e0d5f8;
 }
 
 .Deleting {
-  @include base_status(#cd6921);
+  @include base_cluster_status(#cd6921);
   background: #f5e1d3;
 }
 
 .Failed {
-  @include base_status(#ba2451);
+  @include base_cluster_status(#ba2451);
   background: #f1d3dc;
 }
 
 // node status running stoped
-@mixin base_status($color) {
+@mixin base_node_status($color) {
   width: 8px;
   height: 8px;
   border-radius: 50%;
@@ -49,7 +49,7 @@
 .node_status {
   --node-color: #029e9e;
   .circle {
-    @include base_status(var(--node-color));
+    @include base_node_status(var(--node-color));
   }
   color: var(--node-color);
 }

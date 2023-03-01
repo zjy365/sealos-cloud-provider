@@ -1,7 +1,7 @@
 import DeleteModal from '@/components/delete_modal';
 import Iconfont from '@/components/iconfont';
 import IconFont from '@/components/iconfont';
-import { StatusComponent } from '@/components/scp_status';
+import { ScpStatusComponent } from '@/components/scp_status';
 import request from '@/services/request';
 import useSessionStore from '@/stores/session';
 import { formatTime } from '@/utils/format';
@@ -129,7 +129,7 @@ function FrontPage() {
                   </span>
                 </div>
                 <div className={clsx(styles.row_item)}>
-                  <StatusComponent
+                  <ScpStatusComponent
                     infraStatus={
                       item?.metadata?.deletionTimestamp ? 'Deleting' : item?.status?.status
                     }
