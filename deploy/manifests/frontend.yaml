@@ -83,7 +83,7 @@ spec:
             allowPrivilegeEscalation: false
             capabilities:
               drop:
-                - "ALL"
+                - 'ALL'
           image: zhujingyang/desktop-frontend:latest
           imagePullPolicy: Always
           volumeMounts:
