@@ -34,6 +34,7 @@ function DeleteModal(props: TDeleteModal) {
         kubeconfig
       });
     } catch (error) {}
+    onClose();
     router.push('/');
   };
 
@@ -67,8 +68,16 @@ function DeleteModal(props: TDeleteModal) {
           ></Input>
         </ModalBody>
         <ModalFooter>
-          <Button onClick={onClose}>Cancel</Button>
-          <Button ml={'8px'} variant={'outline'} onClick={onConfrim} isDisabled={isDisabled}>
+          <Button h={'36px'} onClick={onClose}>
+            Cancel
+          </Button>
+          <Button
+            h={'36px'}
+            ml={'8px'}
+            variant={'outline'}
+            onClick={onConfrim}
+            isDisabled={isDisabled}
+          >
             Confrim
           </Button>
         </ModalFooter>

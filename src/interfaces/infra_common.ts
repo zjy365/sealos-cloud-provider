@@ -82,7 +82,7 @@ export const generateYamlTemplate = (scpForm: TScpForm) => {
     const infraResult = JSYAML.dump(infraYamlObj);
     const clusterResult = JSYAML.dump(clusterYamlObj);
 
-    return `${infraResult}---\n${clusterResult}`;
+    return `${infraResult}\n---\n${clusterResult}`;
   } catch (error) {
     return 'error';
   }

@@ -245,6 +245,7 @@ export default function AddPage() {
     if (!!editName) {
       getScpDetailByName(editName as string);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editName]);
 
   return (
@@ -257,7 +258,7 @@ export default function AddPage() {
           onClick={backIndexPage}
         />
         <div className={clsx('text-blue-800 pl-4 font-semibold text-xl lg:text-2xl')}>
-          Create My Cluster
+          {!!editName ? 'Update My Cluster' : 'Create My Cluster'}
         </div>
         <div className={clsx('text-blue-800 ml-auto text-lg lg:text-2xl font-medium')}>
           ¥ <span style={{ color: '#ef7733' }}>{scpPrice}</span> / Hour
@@ -269,7 +270,7 @@ export default function AddPage() {
           isLoading={applyScpMutation.isLoading}
           loadingText="Submitting"
         >
-          Create Now
+          {!!editName ? 'Update' : ' Create Now'}
         </Button>
       </div>
       {/* infra form */}

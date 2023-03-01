@@ -28,8 +28,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       };
       temp_crd.push(JSYAML.dump(spec));
     }
-    let scp_crd = temp_crd.join('---\n');
-
+    let scp_crd = temp_crd.join('\n---\n');
     // Apply crd
     const result = await ApplyYaml(kc, scp_crd);
     JsonResp(result, res);
