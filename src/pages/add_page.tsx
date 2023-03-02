@@ -195,19 +195,24 @@ export default function AddPage() {
 
   const getScpDetailByName = async (name: string) => {
     try {
-      const res = await request.post('/api/infra/awsGet', {
+      const infraRes = await request.post('/api/infra/awsGet', {
         kubeconfig,
         infraName: name
       });
-      if (res?.data?.metadata) {
-        let { name } = res?.data?.metadata;
-        let masterInfo = res?.data?.spec?.hosts[0] as TScpDetailSpecHosts;
-        let nodeInfo = res?.data?.spec?.hosts[1] as TScpDetailSpecHosts;
+      const clusterRes = await request.post('/api/infra/getCluster', {
+        kubeconfig,
+        clusterName: name
+      });
+
+      if (infraRes?.data?.metadata) {
+        let { name } = infraRes?.data?.metadata;
+        let masterInfo = infraRes?.data?.spec?.hosts[0] as TScpDetailSpecHosts;
+        let nodeInfo = infraRes?.data?.spec?.hosts[1] as TScpDetailSpecHosts;
         const payload = {
           infraName: name,
           scpImage: masterInfo.image,
-          sealosVersion: '',
-          sealosPlatform: res?.data?.spec?.platform,
+          sealosVersion: clusterRes?.data?.metadata?.annotations?.['sealos.io/version'],
+          sealosPlatform: infraRes?.data?.spec?.platform,
           clusterImages: ['labring/kubernetes:v1.25.5', 'labring/calico:v3.24.1'],
           // master
           masterCount: masterInfo?.count,
@@ -346,7 +351,7 @@ export default function AddPage() {
                     <FormControl isInvalid={!!error} width="auto">
                       <Flex>
                         <Text
-                          mr={'21px'}
+                          mr={'12px'}
                           fontSize={{ md: 14, lg: 16 }}
                           fontWeight={400}
                           color={'gray.600'}
@@ -382,6 +387,7 @@ export default function AddPage() {
                   platform
                 </Text>
                 <Select
+                  isDisabled={!!editName}
                   width={{ md: '116px', lg: '160px' }}
                   {...scpFormHook.register('sealosPlatform')}
                 >

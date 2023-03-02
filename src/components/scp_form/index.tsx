@@ -1,8 +1,10 @@
 import IconFont from '@/components/iconfont';
 import HeaderInfoComponent from '@/components/title_info';
 import {
+  SELECT_ALIYUN_DISK_TYPE,
+  SELECT_ALIYUN_FLAVOR_TYPE,
   SELECT_DISK_TYPE,
-  SELECT_SCP_TYPE,
+  SELECT_FLAVOR_TYPE,
   TScpForm,
   TSelectOption
 } from '@/interfaces/infra_common';
@@ -18,7 +20,7 @@ import {
   Text
 } from '@chakra-ui/react';
 import clsx from 'clsx';
-import { useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { Controller, useFieldArray, UseFormReturn } from 'react-hook-form';
 import styles from './index.module.scss';
 
@@ -34,6 +36,33 @@ const ScpFormComponent = (props: TScpFormComponent) => {
     name: `${type}DataDisks`,
     control: scpFormHook.control
   });
+
+  const sealosPlatform = scpFormHook.getValues('sealosPlatform') as 'aws' | 'aliyun';
+  const [scpPlatformType, setScpPlatformType] = useState(SELECT_FLAVOR_TYPE);
+  const [scpDisksType, setScpDisksType] = useState(SELECT_DISK_TYPE);
+
+  useEffect(() => {
+    sealosPlatform === 'aws'
+      ? setScpPlatformType(SELECT_FLAVOR_TYPE)
+      : setScpPlatformType(SELECT_ALIYUN_FLAVOR_TYPE);
+    sealosPlatform === 'aws'
+      ? setScpDisksType(SELECT_DISK_TYPE)
+      : setScpDisksType(SELECT_ALIYUN_DISK_TYPE);
+
+    console.log(scpDisksType);
+
+    scpFormHook.reset({
+      ...scpFormHook.getValues(),
+      masterType: sealosPlatform === 'aws' ? 't2.medium' : 'ecs.c7.large',
+      nodeType: sealosPlatform === 'aws' ? 't2.medium' : 'ecs.c7.large',
+      masterRootDiskType: sealosPlatform === 'aws' ? 'gp3' : 'cloud',
+      nodeRootDiskType: sealosPlatform === 'aws' ? 'gp3' : 'cloud',
+      scpImage:
+        sealosPlatform === 'aws'
+          ? 'ami-048280a00d5085dd1'
+          : 'centos_7_9_x64_20G_alibase_20230109.vhd'
+    });
+  }, [scpDisksType, scpFormHook, sealosPlatform]);
 
   return (
     <>
@@ -105,11 +134,12 @@ const ScpFormComponent = (props: TScpFormComponent) => {
             flavor
           </Text>
           <Select width={{ md: '116px', lg: '160px' }} {...scpFormHook.register(`${type}Type`)}>
-            {SELECT_SCP_TYPE.map((item: TSelectOption) => (
-              <option key={item.value} value={item.value}>
-                {item.label}
-              </option>
-            ))}
+            {scpPlatformType &&
+              scpPlatformType.map((item: TSelectOption) => (
+                <option key={item.value} value={item.value}>
+                  {item.label}
+                </option>
+              ))}
           </Select>
         </Flex>
       </FormControl>
@@ -151,11 +181,12 @@ const ScpFormComponent = (props: TScpFormComponent) => {
             width={{ md: '80px', lg: '116px' }}
             {...scpFormHook.register(`${type}RootDiskType`)}
           >
-            {SELECT_DISK_TYPE.map((item: TSelectOption) => (
-              <option key={item.value} value={item.value}>
-                {item.label}
-              </option>
-            ))}
+            {scpDisksType &&
+              scpDisksType.map((item: TSelectOption) => (
+                <option key={item.value} value={item.value}>
+                  {item.label}
+                </option>
+              ))}
           </Select>
         </Flex>
       </FormControl>
@@ -198,11 +229,12 @@ const ScpFormComponent = (props: TScpFormComponent) => {
               width={{ md: '80px', lg: '116px' }}
               {...scpFormHook.register(`${type}DataDisks.${index}.volumeType`)}
             >
-              {SELECT_DISK_TYPE.map((item: TSelectOption) => (
-                <option key={item.value} value={item.value}>
-                  {item.label}
-                </option>
-              ))}
+              {scpDisksType &&
+                scpDisksType.map((item: TSelectOption) => (
+                  <option key={item.value} value={item.value}>
+                    {item.label}
+                  </option>
+                ))}
             </Select>
             <div className="ml-5 hover:bg-grey-300 p-1" onClick={() => remove(index)}>
               <IconFont iconName="icon-delete-button" width={20} height={20} color="#0D55DA" />
@@ -218,8 +250,12 @@ const ScpFormComponent = (props: TScpFormComponent) => {
         className="cursor-pointer mb-10 ml-4"
         onClick={() => {
           if (fields.length + 1 > 16) return;
-          //@ts-ignore
-          append({ volumeType: 'gp3', capacity: 8, type: 'data' });
+          append({
+            volumeType: sealosPlatform === 'aws' ? 'gp3' : 'cloud',
+            //@ts-ignore
+            capacity: 8,
+            type: 'data'
+          });
         }}
       >
         <IconFont

@@ -173,7 +173,14 @@ function FrontPage() {
           })}
         </div>
       )}
-      <DeleteModal isOpen={isOpen} onClose={onClose} infraName={openName} />
+      <DeleteModal
+        isOpen={isOpen}
+        onClose={() => {
+          setScpStatus('Pending');
+          onClose();
+        }}
+        infraName={openName}
+      />
     </>
   );
 }

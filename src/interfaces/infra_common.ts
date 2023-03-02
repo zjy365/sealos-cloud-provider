@@ -1,5 +1,5 @@
 import JSYAML from 'js-yaml';
-export const SELECT_ALIYUN_SCP_TYPE = [
+export const SELECT_ALIYUN_FLAVOR_TYPE = [
   {
     label: '2C4G',
     value: 'ecs.c7.large'
@@ -14,7 +14,7 @@ export const SELECT_ALIYUN_SCP_TYPE = [
   }
 ];
 
-export const SELECT_SCP_TYPE = [
+export const SELECT_FLAVOR_TYPE = [
   {
     label: '2C4G',
     value: 't2.medium'
@@ -26,6 +26,37 @@ export const SELECT_SCP_TYPE = [
   {
     label: '4C16G',
     value: 't2.xlarge'
+  }
+];
+
+export const SELECT_ALIYUN_DISK_TYPE = [
+  {
+    label: 'cloud',
+    value: 'cloud',
+    min: 5,
+    max: 2000
+  },
+  {
+    label: 'cloud_efciency',
+    value: 'cloud_efciency',
+    min: 20,
+    max: 32768
+  },
+  {
+    label: 'cloud_ssd',
+    value: 'cloud_ssd',
+    min: 20,
+    max: 32768
+  },
+  {
+    label: 'cloud_essd',
+    value: 'cloud_essd'
+  },
+  {
+    label: 'cloud_auto',
+    value: 'cloud_auto',
+    min: 40,
+    max: 32768
   }
 ];
 
@@ -104,9 +135,10 @@ export const generateYamlTemplate = (scpForm: TScpForm) => {
   }
 };
 
-export const convertKeyToLabel = (key: string) => {
+export const convertKeyToLabel = (key: string, platform: 'aws' | 'aliyun' = 'aws') => {
+  let selectArray = platform === 'aws' ? SELECT_FLAVOR_TYPE : SELECT_ALIYUN_FLAVOR_TYPE;
   try {
-    const item = SELECT_SCP_TYPE.find((item) => item.value === key);
+    const item = selectArray.find((item) => item.value === key);
     return item?.label;
   } catch (error) {}
 };

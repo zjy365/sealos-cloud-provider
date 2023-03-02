@@ -69,7 +69,7 @@ export default function DetailPage() {
         />
         <div className={clsx('flex flex-col pl-4 text-blue-800')}>
           <span className="text-xl font-semibold lg:text-2xl">{name}</span>
-          <span className={clsx('text-xs lg:text-sm')}> https://my-cluster.cloud.sealos.io</span>
+          {/* <span className={clsx('text-xs lg:text-sm')}> https://my-cluster.cloud.sealos.io</span> */}
         </div>
         <Button
           className="ml-auto h-9 w-24"
@@ -202,6 +202,16 @@ export default function DetailPage() {
               <li className="flex items-center">
                 <span style={{ color: '#3F3F5D' }}>Version</span>
                 <span className="ml-auto">{splitChars(clusterInfo?.data?.spec?.image[0])}</span>
+              </li>
+              <li className="flex items-center">
+                <span style={{ color: '#3F3F5D' }}>Sealos</span>
+                <span className="ml-auto">
+                  {clusterInfo?.data?.metadata?.annotations?.['sealos.io/version']}
+                </span>
+              </li>
+              <li className="flex items-center">
+                <span style={{ color: '#3F3F5D' }}>Platform</span>
+                <span className="ml-auto">{scpInfo?.data?.spec?.platform}</span>
               </li>
             </ul>
           </div>
