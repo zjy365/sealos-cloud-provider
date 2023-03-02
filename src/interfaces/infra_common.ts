@@ -1,4 +1,18 @@
 import JSYAML from 'js-yaml';
+export const SELECT_ALIYUN_SCP_TYPE = [
+  {
+    label: '2C4G',
+    value: 'ecs.c7.large'
+  },
+  {
+    label: '2C8G',
+    value: 'ecs.g7.large'
+  },
+  {
+    label: '4C16G',
+    value: 'ecs.g7.xlarge'
+  }
+];
 
 export const SELECT_SCP_TYPE = [
   {
@@ -34,6 +48,7 @@ export const generateYamlTemplate = (scpForm: TScpForm) => {
       name: scpForm.infraName
     },
     spec: {
+      platform: scpForm.sealosPlatform,
       hosts: [
         {
           roles: ['master'],
@@ -71,7 +86,8 @@ export const generateYamlTemplate = (scpForm: TScpForm) => {
     apiVersion: 'cluster.sealos.io/v1',
     kind: 'Cluster',
     metadata: {
-      name: scpForm.infraName
+      name: scpForm.infraName,
+      annotations: { 'sealos.io/version': scpForm.sealosVersion }
     },
     spec: {
       infra: scpForm.infraName,

@@ -19,6 +19,7 @@ import {
   FormErrorMessage,
   IconButton,
   Input,
+  Select,
   Text,
   useToast
 } from '@chakra-ui/react';
@@ -40,9 +41,9 @@ export default function AddPage() {
   const [scpForm, setScpForm] = useState<TScpForm>({
     infraName: '',
     scpImage: 'ami-048280a00d5085dd1',
-    sealosVersion: '',
-    sealosPlatform: 'Aws',
-    clusterImages: ['labring/kubernetes:v1.25.5', 'labring/calico:v3.24.1'],
+    sealosVersion: '4.1.5',
+    sealosPlatform: 'aws',
+    clusterImages: ['labring/kubernetes:v1.25.5', 'labring/helm:v3.8.2', 'labring/calico:v3.24.1'],
     // master
     masterCount: 1,
     masterType: 't2.medium',
@@ -283,6 +284,7 @@ export default function AddPage() {
         >
           <div className={clsx(styles.custom_antd_form, 'absolute w-full pl-3 pb-5 lg:pl-8')}>
             <HeaderInfoComponent content="Info" size="lg" />
+            {/* scp name */}
             <Controller
               name={'infraName'}
               control={scpFormHook.control}
@@ -327,18 +329,49 @@ export default function AddPage() {
                 </FormControl>
               )}
             ></Controller>
-
-            {/* <FormControl mb={'24px'} ml={'16px'}>
+            {/* sealos version & platform */}
+            <FormControl mb={'24px'} ml={'16px'}>
               <Flex alignItems={'center'}>
-                <Text mr={'12px'} fontSize={{ md: 14, lg: 16 }} fontWeight={400} color={'gray.600'}>
-                  sealos version
-                </Text>
-                <Select
-                  width={{ md: '116px', lg: '160px' }}
-                  {...scpFormHook.register('sealosVersion')}
-                >
-                  <option value="Aws">Aws</option>
-                </Select>
+                <Controller
+                  name={'sealosVersion'}
+                  control={scpFormHook.control}
+                  rules={{
+                    required: 'sealos version is required',
+                    pattern: {
+                      value: /^[1-9]\d*\.[1-9]\d*\.[0-9]\d*$/,
+                      message: 'Enter the correct version number'
+                    }
+                  }}
+                  render={({ field: { onChange, value }, fieldState: { error } }) => (
+                    <FormControl isInvalid={!!error} width="auto">
+                      <Flex>
+                        <Text
+                          mr={'21px'}
+                          fontSize={{ md: 14, lg: 16 }}
+                          fontWeight={400}
+                          color={'gray.600'}
+                        >
+                          sealos version
+                        </Text>
+                        <Flex flexDirection={'column'}>
+                          <Input
+                            type={'text'}
+                            placeholder="sealos version"
+                            width={{ md: '116px', lg: '160px' }}
+                            isDisabled={!!editName}
+                            value={value}
+                            onChange={onChange}
+                          />
+                          {error && (
+                            <FormErrorMessage mt={0} maxW="sm" whiteSpace="normal">
+                              {error.message}
+                            </FormErrorMessage>
+                          )}
+                        </Flex>
+                      </Flex>
+                    </FormControl>
+                  )}
+                />
                 <Text
                   ml={'30px'}
                   mr={'12px'}
@@ -354,7 +387,7 @@ export default function AddPage() {
                 >
                   {[
                     { value: 'aws', label: 'aws' },
-                    { value: 'test', label: 'tes' }
+                    { value: 'aliyun', label: 'aliyun' }
                   ].map((item: TSelectOption) => (
                     <option key={item.value} value={item.value}>
                       {item.label}
@@ -362,7 +395,7 @@ export default function AddPage() {
                   ))}
                 </Select>
               </Flex>
-            </FormControl> */}
+            </FormControl>
             <ScpFormComponent
               key={'master'}
               type="master"
