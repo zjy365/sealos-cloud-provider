@@ -20,6 +20,7 @@ import {
   Text
 } from '@chakra-ui/react';
 import clsx from 'clsx';
+import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { Controller, useFieldArray, UseFormReturn } from 'react-hook-form';
 import styles from './index.module.scss';
@@ -32,6 +33,10 @@ type TScpFormComponent = {
 
 const ScpFormComponent = (props: TScpFormComponent) => {
   const { type, scpImageOptions, formHook: scpFormHook } = props;
+  const router = useRouter();
+  const { name } = router.query;
+  const editName = name || '';
+
   const { fields, append, prepend, remove, swap, move, insert } = useFieldArray({
     name: `${type}DataDisks`,
     control: scpFormHook.control
@@ -83,7 +88,11 @@ const ScpFormComponent = (props: TScpFormComponent) => {
             image
           </Text>
           {scpImageOptions && (
-            <Select width={{ md: '116px', lg: '160px' }} {...scpFormHook.register('scpImage')}>
+            <Select
+              isDisabled={!!editName}
+              width={{ md: '116px', lg: '160px' }}
+              {...scpFormHook.register('scpImage')}
+            >
               {scpImageOptions &&
                 scpImageOptions.map((item: TSelectOption) => (
                   <option key={item.value} value={item.value}>

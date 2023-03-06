@@ -210,7 +210,7 @@ export default function AddPage() {
         let nodeInfo = infraRes?.data?.spec?.hosts[1] as TScpDetailSpecHosts;
         const payload = {
           infraName: name,
-          scpImage: masterInfo.image,
+          scpImage: masterInfo?.image,
           sealosVersion: clusterRes?.data?.metadata?.annotations?.['sealos.io/version'],
           sealosPlatform: infraRes?.data?.spec?.platform,
           clusterImages: ['labring/kubernetes:v1.25.5', 'labring/calico:v3.24.1'],
