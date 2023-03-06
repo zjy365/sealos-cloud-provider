@@ -1,5 +1,5 @@
 import useSessionStore from '@/stores/session';
-import { Flex, Spinner } from '@chakra-ui/react';
+import { Flex, Spinner, Text, Link } from '@chakra-ui/react';
 import { Nunito } from '@next/font/google';
 import clsx from 'clsx';
 import { useEffect, useState } from 'react';
@@ -10,6 +10,8 @@ const nunito = Nunito({ subsets: ['latin'] });
 export default function Layout({ children }: any) {
   const { setSession } = useSessionStore();
   const [isLodaing, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(false);
+
   useEffect(() => {
     return createSealosApp({
       appKey: 'sealos-cloud-provider'
@@ -21,8 +23,10 @@ export default function Layout({ children }: any) {
       try {
         const result = await sealosApp.getUserInfo();
         setSession(result);
-      } catch (error) {}
-      setIsLoading(false);
+        setIsLoading(false);
+      } catch (error) {
+        setIsError(true);
+      }
     };
     initApp();
   }, [isLodaing, setSession]);
@@ -32,13 +36,22 @@ export default function Layout({ children }: any) {
       <div className={clsx(styles.desktopContainer, nunito.className)}>
         {isLodaing ? (
           <Flex w={'100%'} h={'100%'} alignItems={'center'} justifyContent={'center'}>
-            <Spinner
-              thickness="4px"
-              speed="0.65s"
-              emptyColor="gray.200"
-              color="primaryblue.600"
-              size="xl"
-            />
+            {isError ? (
+              <Text>
+                please go to&nbsp;
+                <Link color="primaryblue.600" href="https://cloud.sealos.io/">
+                  cloud.sealos.io
+                </Link>
+              </Text>
+            ) : (
+              <Spinner
+                thickness="4px"
+                speed="0.65s"
+                emptyColor="gray.200"
+                color="primaryblue.600"
+                size="xl"
+              />
+            )}
           </Flex>
         ) : (
           <main className={clsx(styles.backgroundWrap)}>{children}</main>
