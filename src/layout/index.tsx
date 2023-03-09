@@ -3,7 +3,7 @@ import { Flex, Spinner, Text, Link } from '@chakra-ui/react';
 import { Nunito } from '@next/font/google';
 import clsx from 'clsx';
 import { useEffect, useState } from 'react';
-import { createSealosApp, sealosApp } from 'sealos-desktop-sdk';
+import { createSealosApp, sealosApp } from 'sealos-desktop-sdk/app';
 import styles from './index.module.scss';
 const nunito = Nunito({ subsets: ['latin'] });
 
@@ -13,9 +13,7 @@ export default function Layout({ children }: any) {
   const [isError, setIsError] = useState(false);
 
   useEffect(() => {
-    return createSealosApp({
-      appKey: 'system-sealos-cloud-provider'
-    });
+    return createSealosApp();
   }, []);
 
   useEffect(() => {
