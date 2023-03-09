@@ -63,25 +63,6 @@ export default function AddPage() {
     mode: 'onChange'
   });
 
-  const { data } = useQuery(['getConfigMap'], async () => {
-    try {
-      return await request.post('/api/infra/getConfigMap', {
-        kubeconfig,
-        name: 'infra-ami-config'
-      });
-    } catch (error) {}
-  });
-  let imageOptions = [] as TSelectOption[];
-  if (data?.data?.code === 200) {
-    let imageKeyList = omit(data?.data?.data, ['lower-limit-GPU', 'lower-limit']);
-    Object.entries(imageKeyList).map((item) => {
-      let temp = {
-        label: item[0],
-        value: item[1] as string
-      };
-      imageOptions.push(temp);
-    });
-  }
   const [yamlTemplate, setYamlTemplate] = useState(generateYamlTemplate(scpForm));
   const [scpPrice, setScpPrice] = useState('');
 
@@ -402,12 +383,7 @@ export default function AddPage() {
                 </Select>
               </Flex>
             </FormControl>
-            <ScpFormComponent
-              key={'master'}
-              type="master"
-              scpImageOptions={imageOptions}
-              formHook={scpFormHook}
-            />
+            <ScpFormComponent key={'master'} type="master" formHook={scpFormHook} />
             <ScpFormComponent key={'node'} type="node" formHook={scpFormHook} />
           </div>
         </div>

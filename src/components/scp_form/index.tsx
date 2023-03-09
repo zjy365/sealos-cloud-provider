@@ -8,6 +8,8 @@ import {
   TScpForm,
   TSelectOption
 } from '@/interfaces/infra_common';
+import request from '@/services/request';
+import useSessionStore from '@/stores/session';
 import {
   Flex,
   FormControl,
@@ -19,23 +21,32 @@ import {
   Select,
   Text
 } from '@chakra-ui/react';
+import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Controller, useFieldArray, UseFormReturn } from 'react-hook-form';
-import styles from './index.module.scss';
 
 type TScpFormComponent = {
   type: 'master' | 'node';
-  scpImageOptions?: TSelectOption[];
   formHook: UseFormReturn<TScpForm, any>;
 };
 
 const ScpFormComponent = (props: TScpFormComponent) => {
-  const { type, scpImageOptions, formHook: scpFormHook } = props;
+  const { type, formHook: scpFormHook } = props;
   const router = useRouter();
   const { name } = router.query;
   const editName = name || '';
+
+  const { kubeconfig } = useSessionStore((state) => state.getSession());
+  const { data } = useQuery(['getConfigMap'], async () => {
+    try {
+      return await request.post('/api/infra/getConfigMap', {
+        kubeconfig,
+        name: 'infra-ami-config'
+      });
+    } catch (error) {}
+  });
 
   const { fields, append, prepend, remove, swap, move, insert } = useFieldArray({
     name: `${type}DataDisks`,
@@ -45,6 +56,9 @@ const ScpFormComponent = (props: TScpFormComponent) => {
   const sealosPlatform = scpFormHook.getValues('sealosPlatform') as 'aws' | 'aliyun';
   const [scpPlatformType, setScpPlatformType] = useState(SELECT_FLAVOR_TYPE);
   const [scpDisksType, setScpDisksType] = useState(SELECT_DISK_TYPE);
+  const scpImageOptions = useMemo(() => {
+    return sealosPlatform === 'aws' ? data?.data?.aws : data?.data?.aliyun;
+  }, [data, sealosPlatform]);
 
   useEffect(() => {
     sealosPlatform === 'aws'
@@ -53,8 +67,6 @@ const ScpFormComponent = (props: TScpFormComponent) => {
     sealosPlatform === 'aws'
       ? setScpDisksType(SELECT_DISK_TYPE)
       : setScpDisksType(SELECT_ALIYUN_DISK_TYPE);
-
-    console.log(scpDisksType);
 
     scpFormHook.reset({
       ...scpFormHook.getValues(),
@@ -65,7 +77,7 @@ const ScpFormComponent = (props: TScpFormComponent) => {
       scpImage:
         sealosPlatform === 'aws'
           ? 'ami-048280a00d5085dd1'
-          : 'centos_7_9_x64_20G_alibase_20230109.vhd'
+          : 'ubuntu_22_04_x64_20G_alibase_20230208.vhd'
     });
   }, [scpDisksType, scpFormHook, sealosPlatform]);
 
@@ -74,35 +86,28 @@ const ScpFormComponent = (props: TScpFormComponent) => {
       <div className="mb-3" key={type}>
         <HeaderInfoComponent content={type === 'node' ? 'Node' : 'Master'} />
       </div>
-
-      <FormControl
-        className={clsx(
-          {
-            [styles.hidden_form_item]: type === 'node'
-          },
-          'mb-3 ml-4'
-        )}
-      >
-        <Flex alignItems={'center'}>
-          <Text mr={'16px'} fontSize={{ md: 14, lg: 16 }} fontWeight={400} color={'gray.600'}>
-            image
-          </Text>
-          {scpImageOptions && (
-            <Select
-              isDisabled={!!editName}
-              width={{ md: '116px', lg: '160px' }}
-              {...scpFormHook.register('scpImage')}
-            >
-              {scpImageOptions &&
-                scpImageOptions.map((item: TSelectOption) => (
+      {type === 'master' && (
+        <FormControl className={clsx('mb-3 ml-4')}>
+          <Flex alignItems={'center'}>
+            <Text mr={'16px'} fontSize={{ md: 14, lg: 16 }} fontWeight={400} color={'gray.600'}>
+              image
+            </Text>
+            {scpImageOptions && (
+              <Select
+                isDisabled={!!editName}
+                width={{ md: '116px', lg: '160px' }}
+                {...scpFormHook.register('scpImage')}
+              >
+                {scpImageOptions.map((item: TSelectOption) => (
                   <option key={item.value} value={item.value}>
                     {item.label}
                   </option>
                 ))}
-            </Select>
-          )}
-        </Flex>
-      </FormControl>
+              </Select>
+            )}
+          </Flex>
+        </FormControl>
+      )}
 
       <FormControl className="mb-3 ml-4">
         <Flex alignItems={'center'}>

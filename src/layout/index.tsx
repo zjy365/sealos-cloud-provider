@@ -8,13 +8,13 @@ import styles from './index.module.scss';
 const nunito = Nunito({ subsets: ['latin'] });
 
 export default function Layout({ children }: any) {
-  const { setSession } = useSessionStore();
+  const { setSession, getSession } = useSessionStore();
   const [isLodaing, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
 
   useEffect(() => {
     return createSealosApp({
-      appKey: 'sealos-cloud-provider'
+      appKey: 'system-sealos-cloud-provider'
     });
   }, []);
 
@@ -25,6 +25,7 @@ export default function Layout({ children }: any) {
         setSession(result);
         setIsLoading(false);
       } catch (error) {
+        // setIsLoading(false); // dev important
         setIsError(true);
       }
     };
