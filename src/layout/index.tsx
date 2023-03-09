@@ -25,7 +25,6 @@ export default function Layout({ children }: any) {
         setSession(result);
         setIsLoading(false);
       } catch (error) {
-        // setIsLoading(false); // dev important
         setIsError(true);
       }
     };
