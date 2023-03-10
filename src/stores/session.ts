@@ -1,7 +1,7 @@
 import type { Session } from '@/interfaces/session';
 import { sessionKey } from '@/interfaces/session';
 import { create } from 'zustand';
-import { devtools } from 'zustand/middleware';
+import { devtools, persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
 const yaml = require('js-yaml');
 

@@ -30,34 +30,34 @@ export const SELECT_FLAVOR_TYPE = [
 ];
 
 export const SELECT_ALIYUN_DISK_TYPE = [
-  {
-    label: 'cloud',
-    value: 'cloud',
-    min: 5,
-    max: 2000
-  },
-  {
-    label: 'cloud_efciency',
-    value: 'cloud_efciency',
-    min: 20,
-    max: 32768
-  },
-  {
-    label: 'cloud_ssd',
-    value: 'cloud_ssd',
-    min: 20,
-    max: 32768
-  },
+  // {
+  //   label: 'cloud',
+  //   value: 'cloud',
+  //   min: 5,
+  //   max: 2000
+  // },
+  // {
+  //   label: 'cloud_efciency',
+  //   value: 'cloud_efciency',
+  //   min: 20,
+  //   max: 32768
+  // },
+  // {
+  //   label: 'cloud_ssd',
+  //   value: 'cloud_ssd',
+  //   min: 20,
+  //   max: 32768
+  // }
   {
     label: 'cloud_essd',
     value: 'cloud_essd'
-  },
-  {
-    label: 'cloud_auto',
-    value: 'cloud_auto',
-    min: 40,
-    max: 32768
   }
+  // {
+  //   label: 'cloud_auto',
+  //   value: 'cloud_auto',
+  //   min: 40,
+  //   max: 32768
+  // }
 ];
 
 export const SELECT_DISK_TYPE = [

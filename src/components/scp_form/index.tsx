@@ -72,12 +72,14 @@ const ScpFormComponent = (props: TScpFormComponent) => {
       ...scpFormHook.getValues(),
       masterType: sealosPlatform === 'aws' ? 't2.medium' : 'ecs.c7.large',
       nodeType: sealosPlatform === 'aws' ? 't2.medium' : 'ecs.c7.large',
-      masterRootDiskType: sealosPlatform === 'aws' ? 'gp3' : 'cloud',
-      nodeRootDiskType: sealosPlatform === 'aws' ? 'gp3' : 'cloud',
+      masterRootDiskType: sealosPlatform === 'aws' ? 'gp3' : 'cloud_essd',
+      nodeRootDiskType: sealosPlatform === 'aws' ? 'gp3' : 'cloud_essd',
       scpImage:
         sealosPlatform === 'aws'
           ? 'ami-048280a00d5085dd1'
-          : 'ubuntu_22_04_x64_20G_alibase_20230208.vhd'
+          : 'ubuntu_22_04_x64_20G_alibase_20230208.vhd',
+      masterRootDiskSize: sealosPlatform === 'aws' ? 8 : 20,
+      nodeRootDiskSize: sealosPlatform === 'aws' ? 8 : 20
     });
   }, [scpDisksType, scpFormHook, sealosPlatform]);
 
@@ -168,7 +170,7 @@ const ScpFormComponent = (props: TScpFormComponent) => {
             name={`${type}RootDiskSize`}
             render={({ field: { onChange, onBlur, value } }) => (
               <NumberInput
-                min={8}
+                min={sealosPlatform === 'aws' ? 8 : 20}
                 max={256}
                 width={{ md: '80px', lg: '116px' }}
                 value={value}
@@ -192,7 +194,7 @@ const ScpFormComponent = (props: TScpFormComponent) => {
           </Text>
           <Select
             ml={'24px'}
-            width={{ md: '80px', lg: '116px' }}
+            width={{ md: '80px', lg: '120px' }}
             {...scpFormHook.register(`${type}RootDiskType`)}
           >
             {scpDisksType &&
@@ -216,7 +218,7 @@ const ScpFormComponent = (props: TScpFormComponent) => {
               name={`${type}DataDisks.${index}.capacity`}
               render={({ field: { onChange, onBlur, value } }) => (
                 <NumberInput
-                  min={8}
+                  min={sealosPlatform === 'aws' ? 8 : 20}
                   max={256}
                   width={{ md: '80px', lg: '116px' }}
                   value={value}
@@ -240,7 +242,7 @@ const ScpFormComponent = (props: TScpFormComponent) => {
             </Text>
             <Select
               ml={'24px'}
-              width={{ md: '80px', lg: '116px' }}
+              width={{ md: '80px', lg: '120px' }}
               {...scpFormHook.register(`${type}DataDisks.${index}.volumeType`)}
             >
               {scpDisksType &&
@@ -265,9 +267,9 @@ const ScpFormComponent = (props: TScpFormComponent) => {
         onClick={() => {
           if (fields.length + 1 > 16) return;
           append({
-            volumeType: sealosPlatform === 'aws' ? 'gp3' : 'cloud',
+            volumeType: sealosPlatform === 'aws' ? 'gp3' : 'cloud_essd',
             //@ts-ignore
-            capacity: 8,
+            capacity: sealosPlatform === 'aws' ? 8 : 20,
             type: 'data'
           });
         }}

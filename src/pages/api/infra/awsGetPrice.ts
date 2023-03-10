@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { JsonResp } from '@/services/response';
-import { TScpForm } from '@/interfaces/infra_common';
+import { TDiskOption, TScpForm } from '@/interfaces/infra_common';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const {
@@ -11,8 +11,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     nodeType,
     nodeCount,
     nodeRootDiskSize,
-    nodeRootDiskType
+    nodeRootDiskType,
+    masterDataDisks,
+    nodeDataDisks,
+    sealosPlatform
   } = req.body as TScpForm;
+
   const infra_price = {
     't2.micro': 10,
     't2.small': 22,
@@ -34,12 +38,68 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     gp3: 60 / 30 / 24
   };
 
-  const map = new Map(Object.entries(infra_price));
-  let s1 = (map.get(masterType) ?? 0) * masterCount;
-  let s2 = (map.get(nodeType) ?? 0) * nodeCount;
-  let s3 = (map.get(masterRootDiskType) ?? 0) * masterRootDiskSize;
-  let s4 = (map.get(nodeRootDiskType) ?? 0) * nodeRootDiskSize;
-  const sumPrice = (s1 + s2 + s3 + s4) / 100;
+  const aliyun_price = {
+    'ecs.c7.large': 41,
+    'ecs.g7.large': 53,
+    'ecs.g7.xlarge': 105,
+    cloud_essd: 4.2
+  };
 
-  JsonResp({ sumPrice }, res);
+  try {
+    // const map = new Map(Object.entries(sealosPlatform === 'aws' ? infra_price : aliyun_price));
+
+    if (sealosPlatform === 'aws') {
+      const map = new Map(Object.entries(infra_price));
+      let master_type = (map.get(masterType) ?? 0) * Number(masterCount);
+      let node_type = (map.get(nodeType) ?? 0) * Number(nodeCount);
+      let master_root_disk_price = (map.get(masterRootDiskType) ?? 0) * Number(masterRootDiskSize);
+      let node_root_disks_price = (map.get(nodeRootDiskType) ?? 0) * Number(nodeRootDiskSize);
+      const master_data_disks_price = masterDataDisks.reduce((pre, cur) => {
+        let temp = (map.get(cur.volumeType) ?? 0) * Number(cur.capacity);
+        return pre + temp;
+      }, 0);
+      const node_data_disks_price = nodeDataDisks.reduce((pre, cur) => {
+        let temp = (map.get(cur.volumeType) ?? 0) * Number(cur.capacity);
+        return pre + temp;
+      }, 0);
+      const sumPrice =
+        (master_type +
+          node_type +
+          master_root_disk_price +
+          node_root_disks_price +
+          master_data_disks_price +
+          node_data_disks_price) /
+        100;
+      JsonResp({ sumPrice }, res);
+    } else if (sealosPlatform === 'aliyun') {
+      const map = new Map(Object.entries(aliyun_price));
+      let master_type = (map.get(masterType) ?? 0) * Number(masterCount);
+      let node_type = (map.get(nodeType) ?? 0) * Number(nodeCount);
+
+      let master_root_disk_price =
+        (map.get(masterRootDiskType) ?? 0) + 0.2 * Number(masterRootDiskSize - 20);
+      let node_root_disks_price =
+        (map.get(nodeRootDiskType) ?? 0) + 0.2 * Number(masterRootDiskSize - 20);
+      const master_data_disks_price = masterDataDisks.reduce((pre, cur) => {
+        let temp = (map.get(cur.volumeType) ?? 0) + 0.2 * (Number(cur.capacity) - 20);
+        return pre + temp;
+      }, 0);
+      const node_data_disks_price = nodeDataDisks.reduce((pre, cur) => {
+        let temp = (map.get(cur.volumeType) ?? 0) + 0.2 * (Number(cur.capacity) - 20);
+        return pre + temp;
+      }, 0);
+
+      const sumPrice =
+        (master_type +
+          node_type +
+          master_root_disk_price +
+          node_root_disks_price +
+          master_data_disks_price +
+          node_data_disks_price) /
+        100;
+      JsonResp({ sumPrice }, res);
+    }
+  } catch (error) {
+    JsonResp(error, res);
+  }
 }
