@@ -317,7 +317,7 @@ export default function AddPage() {
             ></Controller>
             {/* sealos version & platform */}
             <FormControl mb={'24px'} ml={'16px'}>
-              <Flex alignItems={'center'}>
+              <Flex alignItems={'start'}>
                 <Controller
                   name={'sealosVersion'}
                   control={scpFormHook.control}
