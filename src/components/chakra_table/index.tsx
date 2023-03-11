@@ -64,11 +64,12 @@ export default function Chakra_Table(props: TChakra_Table) {
                     <NodeStatusComponent status={item?.status} />
                   </Td>
                   <Td>
+                    {/* E-IP */}
                     <Box className={styles.meta_ip}>
-                      {item?.ipaddress[0]?.ipValue}
+                      {item?.ipaddress[1]?.ipValue}
                       <div
                         className={styles.meta_ip_copy}
-                        onClick={() => successCopy(item?.ipaddress[0]?.ipValue)}
+                        onClick={() => successCopy(item?.ipaddress[1]?.ipValue)}
                       >
                         <IconFont iconName="icon-copy" color="#0D55DA" width={12} height={12} />
                       </div>
