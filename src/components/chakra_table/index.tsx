@@ -4,18 +4,43 @@ import { TNodeMetaData } from '@/interfaces/infra_common';
 import { Box, Table, TableContainer, Tbody, Td, Thead, Tr, useToast } from '@chakra-ui/react';
 import clsx from 'clsx';
 import Image from 'next/image';
+import { useMemo } from 'react';
 import styles from './index.module.scss';
 
 type TChakra_Table = {
   tableHeader: string[];
   tableData: any;
-  type: 'master' | 'node';
+  type: 'Masters' | 'Nodes' | 'All';
   showHeader?: boolean;
 };
 
 export default function Chakra_Table(props: TChakra_Table) {
   const { tableHeader, tableData, type, showHeader = 'true' } = props;
   const toast = useToast();
+  if (!tableData || tableData.length === 0) {
+    return null;
+  }
+  let renderData = [];
+  try {
+    const scpMasterLists = tableData?.hosts[0]?.metadata?.map((item: any) => {
+      if (item?.labels?.master0) {
+        return { type: 'Master', master0: true, ...item };
+      }
+      return { type: 'Master', ...item };
+    });
+    const scpNodeLists = tableData?.hosts[1]?.metadata?.map((item: any) => {
+      return { type: 'Node', ...item };
+    });
+    if (type === 'All') {
+      renderData = scpMasterLists.concat(scpNodeLists);
+    } else if (type === 'Masters') {
+      renderData = scpMasterLists;
+    } else if (type === 'Nodes') {
+      renderData = scpNodeLists;
+    } else {
+      renderData = [];
+    }
+  } catch (error) {}
 
   const successCopy = (value: string, isShowContent = true) => {
     navigator.clipboard.writeText(value);
@@ -40,22 +65,22 @@ export default function Chakra_Table(props: TChakra_Table) {
         </Thead>
         {tableData && (
           <Tbody>
-            {tableData?.map((item: TNodeMetaData) => {
+            {renderData?.map((item: TNodeMetaData) => {
               return (
                 <Tr key={item?.id} className={styles.table_row}>
                   <Td className="flex items-center">
                     <div className="w-6 h-6">
-                      {type === 'master' && (
-                        <Image alt="master" src="/images/scp_master.svg" width={24} height={24} />
-                      )}
-                      {type === 'node' && (
-                        <Image alt="node" src="/images/scp_node.svg" width={24} height={24} />
-                      )}
+                      <Image
+                        alt={item?.type || ''}
+                        src={`/images/scp_${item?.type}.svg`}
+                        width={24}
+                        height={24}
+                      />
                     </div>
 
                     <div className="flex flex-col pl-3">
                       <span className={'text-xs font-semibold  text-black-600'}>
-                        {type === 'master' ? 'Master' : 'Node'}
+                        {item?.master0 ? 'Master0' : item.type}
                       </span>
                       <span className={styles.meta_id}>{item?.id}</span>
                     </div>

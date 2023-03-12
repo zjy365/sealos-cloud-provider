@@ -183,6 +183,9 @@ export type TNodeMetaData = {
     ipValue: string;
   }[];
   status: string;
+  type?: string;
+  labels?: any;
+  master0?: boolean;
 };
 
 export type TNodeListItem = {

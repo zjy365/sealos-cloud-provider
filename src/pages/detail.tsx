@@ -18,7 +18,7 @@ export default function DetailPage() {
   const { name } = router.query;
   const infraName = name || '';
   const { kubeconfig } = useSessionStore((state) => state.getSession());
-  const [scpListType, setScpListType] = useState('All');
+  const [scpListType, setScpListType] = useState<'All' | 'Masters' | 'Nodes'>('All');
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
 
@@ -27,9 +27,6 @@ export default function DetailPage() {
       return await request.post('/api/infra/awsGet', { kubeconfig, infraName });
     } catch (error) {}
   });
-
-  const scpMasterLists = scpInfo?.data?.spec?.hosts[0] || [];
-  const scpNodeLists = scpInfo?.data?.spec?.hosts[1] || [];
 
   const { data: clusterInfo } = useQuery(['awsGetCluster', infraName], async () => {
     try {
@@ -117,21 +114,11 @@ export default function DetailPage() {
               </div>
             </div>
           </div>
-          {(scpListType === 'All' || scpListType === 'Masters') && (
-            <ChakraTable
-              type="master"
-              tableHeader={['Name', 'Status', 'E-IP', 'IP']}
-              tableData={scpMasterLists?.metadata}
-            />
-          )}
-          {(scpListType === 'All' || scpListType === 'Nodes') && (
-            <ChakraTable
-              type="node"
-              tableHeader={['Name', 'Status', 'E-IP', 'IP']}
-              tableData={scpNodeLists?.metadata}
-              showHeader={scpListType === 'Nodes' ? true : false}
-            />
-          )}
+          <ChakraTable
+            type={scpListType}
+            tableHeader={['Name', 'Status', 'E-IP', 'IP']}
+            tableData={scpInfo?.data?.spec}
+          />
         </div>
         {/* @media (min-width: 1024px) master */}
         <div className={clsx(styles.base_card_style, 'hidden lg:block basis-2/5 w-0')}>
@@ -146,9 +133,9 @@ export default function DetailPage() {
             <span style={{ color: '#0D55DA' }}>Master</span>
           </div>
           <ChakraTable
-            type="master"
+            type="Masters"
             tableHeader={['Name', 'Status', 'E-IP', 'IP']}
-            tableData={scpMasterLists?.metadata}
+            tableData={scpInfo?.data?.spec}
           />
         </div>
         {/* @media (min-width: 1024px) node */}
@@ -164,9 +151,9 @@ export default function DetailPage() {
             <span style={{ color: '#0D55DA' }}>Node</span>
           </div>
           <ChakraTable
-            type="node"
+            type="Nodes"
             tableHeader={['Name', 'Status', 'E-IP', 'IP']}
-            tableData={scpNodeLists?.metadata}
+            tableData={scpInfo?.data?.spec}
           />
         </div>
         {/* scp info */}
