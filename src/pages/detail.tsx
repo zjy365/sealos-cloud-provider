@@ -6,7 +6,7 @@ import { convertKeyToLabel } from '@/interfaces/infra_common';
 import request from '@/services/request';
 import useSessionStore from '@/stores/session';
 import { hideMiddleChars, splitChars } from '@/utils/strings';
-import { Button, IconButton, useDisclosure, useToast } from '@chakra-ui/react';
+import { Button, Flex, IconButton, useDisclosure, useToast } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
 import clsx from 'clsx';
 import { useRouter } from 'next/router';
@@ -91,9 +91,9 @@ export default function DetailPage() {
           Delete
         </Button>
       </div>
-      <div className="grow flex mt-4">
+      <Flex mt={'16px'} flex={'1 0 0%'} h={0}>
         {/* @media (min-width: 1024px) card */}
-        <div className={clsx(styles.base_card_style, 'basis-3/4 lg:hidden')}>
+        <div className={clsx(styles.base_card_style, 'basis-3/4 lg:hidden w-0')}>
           <div className="h-7 m-4 mb-2 flex items-center">
             <IconFont
               iconName="icon-cluster-list"
@@ -134,7 +134,7 @@ export default function DetailPage() {
           )}
         </div>
         {/* @media (min-width: 1024px) master */}
-        <div className={clsx(styles.base_card_style, 'hidden lg:block basis-2/5')}>
+        <div className={clsx(styles.base_card_style, 'hidden lg:block basis-2/5 w-0')}>
           <div className="h-7 m-4 mb-2 flex items-center">
             <IconFont
               iconName="icon-cluster-list"
@@ -152,7 +152,7 @@ export default function DetailPage() {
           />
         </div>
         {/* @media (min-width: 1024px) node */}
-        <div className={clsx(styles.base_card_style, 'hidden lg:block basis-2/5 ml-3')}>
+        <div className={clsx(styles.base_card_style, 'hidden lg:block basis-2/5 ml-3 w-0')}>
           <div className="h-7 m-4 mb-2 flex items-center">
             <IconFont
               iconName="icon-cluster-list"
@@ -170,7 +170,7 @@ export default function DetailPage() {
           />
         </div>
         {/* scp info */}
-        <div className={clsx('basis-1/4 ml-3 flex flex-col lg:basis-1/5')}>
+        <div className={clsx('basis-1/4 ml-3 flex flex-col lg:basis-1/5   overflow-y-auto')}>
           <div className={clsx(styles.base_card_style, 'px-3 py-4')}>
             <TitleInfo content="Info" />
             <ul className={clsx(styles.list_card, 'space-y-3 mt-3')}>
@@ -254,7 +254,7 @@ export default function DetailPage() {
             </ul>
           </div>
         </div>
-      </div>
+      </Flex>
       <DeleteModal isOpen={isOpen} onClose={onClose} infraName={infraName as string} />
     </div>
   );

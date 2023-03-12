@@ -1,76 +1,9 @@
 .base_card_style {
   background: #fcfdfe;
   border-radius: 8px;
+  overflow: auto;
+  overflow-wrap: break-word;
 }
-
-// .table_header {
-//   display: flex;
-//   height: 38px;
-//   align-items: center;
-//   padding-left: 16px;
-//   color: #6f6f85;
-//   line-height: 16px;
-//   border-bottom: 0.5px solid #e7e7eb;
-//   font-weight: 400;
-//   font-size: 10px;
-// }
-
-// .table_row {
-//   display: flex;
-//   height: 52px;
-//   align-items: center;
-//   padding-left: 16px;
-//   color: #0f0f34;
-// }
-
-// .header_item,
-// .row_item {
-//   flex: 1 1 25%;
-//   text-align: left;
-// }
-// .special_item {
-//   flex-basis: 40%;
-//   flex-shrink: 0;
-// }
-
-// .scp_name {
-//   line-height: 140%;
-//   color: #0f0f34;
-// }
-
-// .scp_id {
-//   line-height: 140%;
-//   color: #3f3f5d;
-// }
-
-// .meta_id {
-//   word-break: break-all;
-//   font-size: 10px;
-//   font-weight: 400;
-// }
-
-// .meta_ip {
-//   font-weight: 400;
-//   font-size: 12px;
-//   padding: 8px 6px;
-//   width: 120px;
-//   display: flex;
-//   align-items: center;
-//   justify-content: space-between;
-//   &:hover {
-//     background: #e9edf5;
-//     border-radius: 4px;
-//     .meta_ip_copy {
-//       display: block;
-//     }
-//   }
-//   .meta_ip_copy {
-//     cursor: pointer;
-//     display: none;
-//     padding: 2px;
-//   }
-// }
-// taidasdsadasdasdsa
 
 .list_card {
   font-weight: 400px;
