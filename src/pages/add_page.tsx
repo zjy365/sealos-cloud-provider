@@ -20,7 +20,8 @@ import {
   Input,
   Select,
   Text,
-  useToast
+  useToast,
+  UseToastOptions
 } from '@chakra-ui/react';
 import { useMutation } from '@tanstack/react-query';
 import clsx from 'clsx';
@@ -107,6 +108,24 @@ export default function AddPage() {
         toast({
           title: 'success',
           status: 'success',
+          position: 'top',
+          isClosable: true
+        });
+      }
+    },
+    onError: (err) => {
+      //@ts-ignore
+      if (err?.data?.code === 403) {
+        toast({
+          status: 'error',
+          position: 'top',
+          isClosable: true,
+          description: 'Insufficient balance, please recharge',
+          duration: 6000
+        });
+      } else {
+        toast({
+          status: 'error',
           position: 'top',
           isClosable: true
         });

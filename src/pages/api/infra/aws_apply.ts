@@ -1,6 +1,6 @@
 import { authSession } from '@/services/auth';
 import { ApplyYaml, GetUserDefaultNameSpace, K8sApi } from '@/services/kubernetes';
-import { JsonResp } from '@/services/response';
+import { ForbiddenResp, JsonResp } from '@/services/response';
 import * as k8s from '@kubernetes/client-node';
 import JSYAML from 'js-yaml';
 import type { NextApiRequest, NextApiResponse } from 'next';
@@ -34,8 +34,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Apply crd
     const result = await ApplyYaml(kc, scp_crd);
     JsonResp(result, res);
-  } catch (err) {
+  } catch (err: any) {
     console.log(err, 'apply-err');
-    JsonResp(err, res);
+    if (err?.body?.code === 403) {
+      ForbiddenResp(err?.body, res);
+    } else {
+      JsonResp(err, res);
+    }
   }
 }

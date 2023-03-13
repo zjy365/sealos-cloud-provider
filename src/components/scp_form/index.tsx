@@ -76,7 +76,9 @@ const ScpFormComponent = (props: TScpFormComponent) => {
           ? 'ami-048280a00d5085dd1'
           : 'ubuntu_22_04_x64_20G_alibase_20230208.vhd',
       masterRootDiskSize: sealosPlatform === 'aws' ? 8 : 20,
-      nodeRootDiskSize: sealosPlatform === 'aws' ? 8 : 20
+      nodeRootDiskSize: sealosPlatform === 'aws' ? 8 : 20,
+      masterDataDisks: [],
+      nodeDataDisks: []
     });
   }, [scpDisksType, scpFormHook, sealosPlatform]);
 

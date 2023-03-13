@@ -111,7 +111,7 @@ request.interceptors.response.use(
       error.data = {};
       error.data.msg = '请求超时或服务器异常，请检查网络或联系管理员！';
     }
-    return Promise.reject(error);
+    return Promise.reject(error?.response || error);
   }
 );
 
