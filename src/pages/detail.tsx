@@ -172,7 +172,7 @@ export default function DetailPage() {
                 </span>
               </li>
               <li className="flex items-center">
-                <span style={{ color: '#3F3F5D' }}>Ssh key</span>
+                <span style={{ color: '#3F3F5D' }}>SSH Key</span>
                 <span
                   className="ml-auto cursor-pointer"
                   onClick={() => successCopy(scpInfo?.data?.spec?.ssh?.pkData, false)}
@@ -206,7 +206,10 @@ export default function DetailPage() {
               <li className="flex items-center">
                 <span style={{ color: '#3F3F5D' }}>Flavor</span>
                 <span className="ml-auto">
-                  {convertKeyToLabel(scpInfo?.data?.spec?.hosts[0].flavor)}
+                  {convertKeyToLabel(
+                    scpInfo?.data?.spec?.hosts[0].flavor,
+                    scpInfo?.data?.spec?.platform
+                  )}
                 </span>
               </li>
               <li className="flex items-center">
@@ -220,12 +223,15 @@ export default function DetailPage() {
             </ul>
           </div>
           <div className={clsx(styles.base_card_style, 'mt-3 px-3 py-4')}>
-            <TitleInfo content="Master" />
+            <TitleInfo content="Node" />
             <ul className={clsx(styles.list_card, 'space-y-3 mt-3')}>
               <li className="flex items-center">
                 <span style={{ color: '#3F3F5D' }}>Flavor</span>
                 <span className="ml-auto">
-                  {convertKeyToLabel(scpInfo?.data?.spec?.hosts[1].flavor)}
+                  {convertKeyToLabel(
+                    scpInfo?.data?.spec?.hosts[1].flavor,
+                    scpInfo?.data?.spec?.platform
+                  )}
                 </span>
               </li>
               <li className="flex items-center">

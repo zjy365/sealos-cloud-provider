@@ -1,7 +1,7 @@
 
 SERVICE_NAME=zhujingyang/sealos-cloud-provider
 # Image URL to use all building/pushing image targets
-IMG ?= $(SERVICE_NAME):1.0.7
+IMG ?= $(SERVICE_NAME):1.0.8
 
 .PHONY: all
 all: docker-build-and-push
