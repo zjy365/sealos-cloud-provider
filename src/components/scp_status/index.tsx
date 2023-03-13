@@ -52,11 +52,11 @@ export const ScpStatusComponent = ({
 
 export const NodeStatusComponent = ({ status }: { status: string }) => {
   const colorMap = {
-    running: '#029e9e',
-    pending: '#662fdc',
-    terminated: '#ba2451',
-    stopped: '#0d55da',
-    err: '#0d55da'
+    Running: '#029e9e',
+    Pending: '#662fdc',
+    Terminated: '#ba2451',
+    Stopped: '#0d55da',
+    Err: '#0d55da'
   };
   return (
     <>
