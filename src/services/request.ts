@@ -65,7 +65,7 @@ request.interceptors.request.use(
 
     const session = useSessionStore.getState().session;
     _headers['Authorization'] = encodeURIComponent(
-      session?.kubeconfig || process.env.NEXT_PUBLIC_MOCK_KUBECONFIG || ''
+      JSON.stringify(session?.kubeconfig) || process.env.NEXT_PUBLIC_MOCK_KUBECONFIG || ''
     );
 
     // if (session?.token?.access_token) {
