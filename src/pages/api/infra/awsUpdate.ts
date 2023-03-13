@@ -1,3 +1,4 @@
+import { authSession } from '@/services/auth';
 import { CRDMeta, GetUserDefaultNameSpace, K8sApi, UpdateCRD } from '@/services/kubernetes';
 import { JsonResp } from '@/services/response';
 import { compare } from 'fast-json-patch';
@@ -5,8 +6,8 @@ import JSYAML from 'js-yaml';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { scp_yaml, old_scp_yaml, kubeconfig, scp_name } = req.body;
-
+  const { scp_yaml, old_scp_yaml, scp_name } = req.body;
+  const kubeconfig = await authSession(req.headers);
   const kc = K8sApi(kubeconfig);
   const kube_user = kc.getCurrentUser();
   if (kube_user === null) {

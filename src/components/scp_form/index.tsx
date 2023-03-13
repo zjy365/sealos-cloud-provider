@@ -9,7 +9,6 @@ import {
   TSelectOption
 } from '@/interfaces/infra_common';
 import request from '@/services/request';
-import useSessionStore from '@/stores/session';
 import {
   Flex,
   FormControl,
@@ -38,11 +37,9 @@ const ScpFormComponent = (props: TScpFormComponent) => {
   const { name } = router.query;
   const editName = name || '';
 
-  const { kubeconfig } = useSessionStore((state) => state.getSession());
   const { data } = useQuery(['getConfigMap'], async () => {
     try {
       return await request.post('/api/infra/getConfigMap', {
-        kubeconfig,
         name: 'infra-ami-config'
       });
     } catch (error) {}

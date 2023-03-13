@@ -3,10 +3,13 @@ import * as k8s from '@kubernetes/client-node';
 import { K8sApi } from '@/services/kubernetes';
 import { JsonResp } from '@/services/response';
 import { pickBy } from 'lodash';
+import { authSession } from '@/services/auth';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { kubeconfig, name } = req.body;
+  const { name } = req.body;
+  const kubeconfig = await authSession(req.headers);
   const kc = K8sApi(kubeconfig);
+
   const kube_user = kc.getCurrentUser();
   if (kube_user === null) {
     return res.status(400);

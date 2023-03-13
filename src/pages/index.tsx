@@ -1,9 +1,7 @@
 import DeleteModal from '@/components/delete_modal';
-import Iconfont from '@/components/iconfont';
 import IconFont from '@/components/iconfont';
 import { ScpStatusComponent } from '@/components/scp_status';
 import request from '@/services/request';
-import useSessionStore from '@/stores/session';
 import { formatTime } from '@/utils/format';
 import { Button, useDisclosure } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
@@ -23,7 +21,6 @@ type InfraInfo = {
 
 function FrontPage() {
   const router = useRouter();
-  const { kubeconfig } = useSessionStore((state) => state.getSession());
   const [scpStatus, setScpStatus] = useState('Pending');
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [openName, setOpenName] = useState('');
@@ -33,7 +30,7 @@ function FrontPage() {
     ['getAwsAll'],
     async () => {
       try {
-        const res = await request.post('/api/infra/awsGetAll', { kubeconfig });
+        const res = await request('/api/infra/awsGetAll');
         let allReady = res.data.items?.every((item: InfraInfo) => {
           return item?.status?.status === 'Running';
         });
@@ -51,7 +48,7 @@ function FrontPage() {
 
   const { data: clusterLists } = useQuery(['getClusters'], async () => {
     try {
-      const res = await request.post('/api/infra/getAllCluster', { kubeconfig });
+      const res = await request('/api/infra/getAllCluster');
       return res;
     } catch (err) {}
   });
@@ -150,7 +147,7 @@ function FrontPage() {
                       router.push({ pathname: '/add_page', query: { name: item?.metadata?.name } });
                     }}
                   >
-                    <Iconfont iconName="icon-edit-button" width={28} height={28} color="#0D55DA" />
+                    <IconFont iconName="icon-edit-button" width={28} height={28} color="#0D55DA" />
                   </div>
                   <div
                     className="ml-4 cursor-pointer"
@@ -160,7 +157,7 @@ function FrontPage() {
                       onOpen();
                     }}
                   >
-                    <Iconfont
+                    <IconFont
                       iconName="icon-delete-button"
                       width={28}
                       height={28}

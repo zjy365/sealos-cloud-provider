@@ -1,3 +1,4 @@
+import { authSession } from '@/services/auth';
 import { ApplyYaml, GetUserDefaultNameSpace, K8sApi } from '@/services/kubernetes';
 import { JsonResp } from '@/services/response';
 import * as k8s from '@kubernetes/client-node';
@@ -5,16 +6,17 @@ import JSYAML from 'js-yaml';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const { scp_yaml, kubeconfig } = req.body;
-  const kc = K8sApi(kubeconfig);
-  const kube_user = kc.getCurrentUser();
-
-  if (kube_user === null) {
-    res.status(400);
-    return;
-  }
-
   try {
+    const { scp_yaml } = req.body;
+    const kubeconfig = await authSession(req.headers);
+    const kc = K8sApi(kubeconfig);
+
+    const kube_user = kc.getCurrentUser();
+    if (kube_user === null) {
+      res.status(400);
+      return;
+    }
+
     // Append namespace
     const namespace = GetUserDefaultNameSpace(kube_user.name);
     const specs = JSYAML.loadAll(scp_yaml) as k8s.KubernetesObject[];

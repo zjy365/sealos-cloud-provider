@@ -4,7 +4,6 @@ import IconFont from '@/components/iconfont';
 import TitleInfo from '@/components/title_info';
 import { convertKeyToLabel } from '@/interfaces/infra_common';
 import request from '@/services/request';
-import useSessionStore from '@/stores/session';
 import { hideMiddleChars, splitChars } from '@/utils/strings';
 import { Button, Flex, IconButton, useDisclosure, useToast } from '@chakra-ui/react';
 import { useQuery } from '@tanstack/react-query';
@@ -17,20 +16,19 @@ export default function DetailPage() {
   const router = useRouter();
   const { name } = router.query;
   const infraName = name || '';
-  const { kubeconfig } = useSessionStore((state) => state.getSession());
   const [scpListType, setScpListType] = useState<'All' | 'Masters' | 'Nodes'>('All');
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
 
   const { data: scpInfo } = useQuery(['awsGet', infraName], async () => {
     try {
-      return await request.post('/api/infra/awsGet', { kubeconfig, infraName });
+      return await request.post('/api/infra/awsGet', { infraName });
     } catch (error) {}
   });
 
   const { data: clusterInfo } = useQuery(['awsGetCluster', infraName], async () => {
     try {
-      return await request.post('/api/infra/getCluster', { kubeconfig, clusterName: infraName });
+      return await request.post('/api/infra/getCluster', { clusterName: infraName });
     } catch (error) {}
   });
 

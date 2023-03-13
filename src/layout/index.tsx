@@ -23,6 +23,9 @@ export default function Layout({ children }: any) {
         setSession(result);
         setIsLoading(false);
       } catch (error) {
+        if (process.env.NODE_ENV === 'development') {
+          setIsLoading(false);
+        }
         setIsError(true);
       }
     };

@@ -1,5 +1,4 @@
 import request from '@/services/request';
-import useSessionStore from '@/stores/session';
 import {
   Box,
   Button,
@@ -24,14 +23,12 @@ type TDeleteModal = {
 
 function DeleteModal(props: TDeleteModal) {
   const { infraName, isOpen, onClose } = props;
-  const { kubeconfig } = useSessionStore((state) => state.getSession());
   const [isDisabled, setIsDisabled] = useState(true);
   const router = useRouter();
   const onConfrim = async () => {
     try {
       const result = await request.post('/api/infra/aws_delete', {
-        scp_name: infraName,
-        kubeconfig
+        scp_name: infraName
       });
     } catch (error) {}
     onClose();

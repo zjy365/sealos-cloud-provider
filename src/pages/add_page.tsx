@@ -6,12 +6,11 @@ import {
   conversionPrice,
   debounce,
   generateYamlTemplate,
+  TScpDetailSpecHosts,
   TScpForm,
-  TSelectOption,
-  TScpDetailSpecHosts
+  TSelectOption
 } from '@/interfaces/infra_common';
 import request from '@/services/request';
-import useSessionStore from '@/stores/session';
 import {
   Button,
   Flex,
@@ -23,11 +22,10 @@ import {
   Text,
   useToast
 } from '@chakra-ui/react';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import clsx from 'clsx';
-import { omit } from 'lodash';
 import { useRouter } from 'next/router';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Controller, useForm, UseFormReturn } from 'react-hook-form';
 import styles from './add_page.module.scss';
 
@@ -35,7 +33,6 @@ export default function AddPage() {
   const router = useRouter();
   const { name } = router.query;
   const editName = name || '';
-  const { kubeconfig } = useSessionStore((state) => state.getSession());
   const toast = useToast();
   const oldScpFormYaml = useRef(null);
   const [scpForm, setScpForm] = useState<TScpForm>({
@@ -103,7 +100,7 @@ export default function AddPage() {
 
   const applyScpMutation = useMutation({
     mutationFn: () => {
-      return request.post('/api/infra/aws_apply', { scp_yaml: yamlTemplate, kubeconfig });
+      return request.post('/api/infra/aws_apply', { scp_yaml: yamlTemplate });
     },
     onSuccess: (data) => {
       if (data.data.code === 200) {
@@ -125,7 +122,6 @@ export default function AddPage() {
       return request.post('/api/infra/awsUpdate', {
         scp_yaml: yamlTemplate,
         old_scp_yaml: oldScpFormYaml.current,
-        kubeconfig,
         scp_name: editName
       });
     },
@@ -147,7 +143,6 @@ export default function AddPage() {
   const isScpExist = async (name: string) => {
     try {
       const res = await request.post('/api/infra/awsGet', {
-        kubeconfig,
         infraName: name
       });
       return !!res.data.status;
@@ -177,11 +172,9 @@ export default function AddPage() {
   const getScpDetailByName = async (name: string) => {
     try {
       const infraRes = await request.post('/api/infra/awsGet', {
-        kubeconfig,
         infraName: name
       });
       const clusterRes = await request.post('/api/infra/getCluster', {
-        kubeconfig,
         clusterName: name
       });
 

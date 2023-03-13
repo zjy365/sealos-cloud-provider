@@ -1,5 +1,5 @@
 // http.ts
-import axios, { AxiosRequestConfig, AxiosRequestHeaders, AxiosResponse } from 'axios';
+import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
 import useSessionStore from '@/stores/session';
 import type { ApiResp } from '@/interfaces/api';
 import { isApiResp } from '@/interfaces/api';
@@ -50,7 +50,7 @@ const showStatus = (status: number) => {
 const request = axios.create({
   baseURL: '/',
   withCredentials: true,
-  timeout: 30000
+  timeout: 60000
 });
 
 // request interceptor
@@ -61,15 +61,19 @@ request.interceptors.request.use(
       config.url = process.env.NEXT_PUBLIC_SERVICE + config.url;
     }
 
-    let _headers = {} as AxiosRequestHeaders;
+    let _headers = config.headers || {};
 
     const session = useSessionStore.getState().session;
-    if (session?.token?.access_token) {
-      const token = session.token.access_token;
-      if (token) {
-        _headers['Authorization'] = `Bearer ${token}`;
-      }
-    }
+    _headers['Authorization'] = encodeURIComponent(
+      session?.kubeconfig || process.env.NEXT_PUBLIC_MOCK_KUBECONFIG || ''
+    );
+
+    // if (session?.token?.access_token) {
+    //   const token = session.token.access_token;
+    //   if (token) {
+    //     _headers['Authorization'] = `Bearer ${token}`;
+    //   }
+    // }
 
     if (!config.headers || config.headers['Content-Type'] === '') {
       _headers['Content-Type'] = 'application/json';
