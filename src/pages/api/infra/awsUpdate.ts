@@ -1,6 +1,6 @@
 import { authSession } from '@/services/auth';
 import { CRDMeta, GetUserDefaultNameSpace, K8sApi, UpdateCRD } from '@/services/kubernetes';
-import { JsonResp } from '@/services/response';
+import { ForbiddenResp, JsonResp } from '@/services/response';
 import { compare } from 'fast-json-patch';
 import JSYAML from 'js-yaml';
 import type { NextApiRequest, NextApiResponse } from 'next';
@@ -28,7 +28,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const patch = compare(original_yaml as object, fresh_yaml as object);
     const result = await UpdateCRD(kc, meta, scp_name, patch);
     JsonResp(result.body, res);
-  } catch (error) {
-    JsonResp(error, res);
+  } catch (error: any) {
+    if (error?.body?.code === 403) {
+      ForbiddenResp(error?.body, res);
+    } else {
+      JsonResp(error, res);
+    }
   }
 }
