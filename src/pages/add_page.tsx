@@ -154,6 +154,24 @@ export default function AddPage() {
         });
       }
     },
+    onError: (err) => {
+      //@ts-ignore
+      if (err?.data?.code === 403) {
+        toast({
+          status: 'error',
+          position: 'top',
+          isClosable: true,
+          description: 'Insufficient balance, please recharge',
+          duration: 6000
+        });
+      } else {
+        toast({
+          status: 'error',
+          position: 'top',
+          isClosable: true
+        });
+      }
+    },
     onSettled: () => {
       router.push('/');
     }
