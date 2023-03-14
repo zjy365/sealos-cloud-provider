@@ -90,7 +90,8 @@ export const generateYamlTemplate = (scpForm: TScpForm) => {
             {
               capacity: scpForm.masterRootDiskSize,
               volumeType: scpForm.masterRootDiskType,
-              type: 'root'
+              type: 'root',
+              ...scpForm.masterRootDisks
             },
             ...scpForm.masterDataDisks
           ]
@@ -104,7 +105,8 @@ export const generateYamlTemplate = (scpForm: TScpForm) => {
             {
               capacity: scpForm.nodeRootDiskSize,
               volumeType: scpForm.nodeRootDiskType,
-              type: 'root'
+              type: 'root',
+              ...scpForm.nodeRootDisks
             },
             ...scpForm.nodeDataDisks
           ]
@@ -205,7 +207,8 @@ export type TDiskOption = {
   capacity: string;
   volumeType: string;
   type?: 'root' | 'data';
-  id?: string;
+  id?: any;
+  device?: string;
 };
 
 export type TScpForm = {
@@ -219,24 +222,25 @@ export type TScpForm = {
   masterType: string;
   masterRootDiskSize: number;
   masterRootDiskType: string;
+  masterRootDisks?: TDiskOption[];
   masterDataDisks: TDiskOption[];
   // node
   nodeCount: number;
   nodeType: string;
   nodeRootDiskSize: number;
   nodeRootDiskType: string;
+  nodeRootDisks?: TDiskOption[];
   nodeDataDisks: TDiskOption[];
+  // update
+  hosts?: TScpDetailSpecHosts[];
 };
 
 export type TScpDetailSpecHosts = {
   arch: string;
   count: number;
-  disks: {
-    capacity: number;
-    id: string;
-    type: string;
-    volumeType: string;
-  }[];
+  disks: TDiskOption[];
   flavor: string;
   image: string;
+  metadata?: any;
+  roles?: any;
 };

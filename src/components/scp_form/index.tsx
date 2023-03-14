@@ -65,6 +65,8 @@ const ScpFormComponent = (props: TScpFormComponent) => {
       ? setScpDisksType(SELECT_DISK_TYPE)
       : setScpDisksType(SELECT_ALIYUN_DISK_TYPE);
 
+    // If it is edited, no reset is required
+    if (name) return;
     scpFormHook.reset({
       ...scpFormHook.getValues(),
       masterType: sealosPlatform === 'aws' ? 't2.medium' : 'ecs.c7.large',
@@ -80,7 +82,7 @@ const ScpFormComponent = (props: TScpFormComponent) => {
       masterDataDisks: [],
       nodeDataDisks: []
     });
-  }, [scpDisksType, scpFormHook, sealosPlatform]);
+  }, [name, scpDisksType, scpFormHook, sealosPlatform]);
 
   return (
     <>

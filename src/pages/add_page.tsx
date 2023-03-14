@@ -35,7 +35,6 @@ export default function AddPage() {
   const { name } = router.query;
   const editName = name || '';
   const toast = useToast();
-  const oldScpFormYaml = useRef(null);
   const [scpForm, setScpForm] = useState<TScpForm>({
     infraName: '',
     scpImage: 'ami-048280a00d5085dd1',
@@ -140,7 +139,6 @@ export default function AddPage() {
     mutationFn: () => {
       return request.post('/api/infra/awsUpdate', {
         scp_yaml: yamlTemplate,
-        old_scp_yaml: oldScpFormYaml.current,
         scp_name: editName
       });
     },
@@ -230,26 +228,16 @@ export default function AddPage() {
           masterType: masterInfo?.flavor,
           masterRootDiskSize: masterInfo?.disks[0].capacity,
           masterRootDiskType: masterInfo?.disks[0].volumeType,
-          masterDataDisks:
-            masterInfo?.disks.slice(1).map((item) => ({
-              capacity: item.capacity,
-              volumeType: item.volumeType,
-              type: item.type
-            })) || [],
+          masterRootDisks: masterInfo?.disks?.filter((item) => item.type === 'root')[0],
+          masterDataDisks: masterInfo?.disks?.filter((item) => item.type === 'data'),
           // node
           nodeCount: nodeInfo?.count,
           nodeType: nodeInfo?.flavor,
           nodeRootDiskSize: nodeInfo?.disks[0].capacity,
           nodeRootDiskType: nodeInfo?.disks[0].volumeType,
-          nodeDataDisks:
-            nodeInfo?.disks.slice(1).map((item) => ({
-              capacity: item.capacity,
-              volumeType: item.volumeType,
-              type: item.type
-            })) || []
+          nodeRootDisks: nodeInfo?.disks?.filter((item) => item.type === 'root')[0],
+          nodeDataDisks: nodeInfo?.disks?.filter((item) => item.type === 'data')
         };
-        //@ts-ignore
-        oldScpFormYaml.current = generateYamlTemplate(payload);
         //@ts-ignore
         scpFormHook.reset(payload);
       }
